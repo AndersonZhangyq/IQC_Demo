@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import sun.misc.BASE64Encoder;
 import url_request.UrlRequest;
 
 public class Register extends JFrame implements UI_code {
@@ -27,8 +31,7 @@ public class Register extends JFrame implements UI_code {
 	JLabel user_name_info_label, nick_name_info_label, password_info_label, password_to_confirm_info_label;
 	JButton register_button;
 	JFrame _this;
-	String username, password, nick_name, password_to_comfirm;
-	int result = 0;
+	String username, password, nick_name, password_to_comfirm, encrypted_password;
 	boolean user_name_set, password_set, password_to_confirm_set, nick_name_set;
 
 	public static final int DEFAULT_WIDTH = 400;
@@ -80,7 +83,14 @@ public class Register extends JFrame implements UI_code {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Send information to SQL and make a new user
-				switch (UrlRequest.Check_Register(username, password, nick_name)) {
+				try {
+					encrypted_password = new BASE64Encoder()
+							.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				switch (UrlRequest.Check_Register(username, encrypted_password, nick_name)) {
 				case Success:
 					JOptionPane.showMessageDialog(_this.getContentPane(), "注册成功\n按下确定后将自动登录！", "注册信息",
 							JOptionPane.INFORMATION_MESSAGE);

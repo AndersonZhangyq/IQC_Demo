@@ -23,10 +23,9 @@ import javax.swing.JTextField;
 import sun.misc.BASE64Encoder;
 import url_request.*;
 
-
 public class Login extends JFrame implements UI_code {
-	
-	JPanel login_top_panel,login_buttom_panel;
+
+	JPanel login_top_panel, login_buttom_panel;
 
 	JLabel user_name_label, password_label;
 	JLabel register_label, foreget_password_label;
@@ -35,30 +34,31 @@ public class Login extends JFrame implements UI_code {
 	JButton login_button;
 	JCheckBox remenber_password_checkbox, auto_login_checkbox;
 	JFrame _this;
-	String username, password, encoded_password;
+	String username, password, encrypted_password;
+	boolean autoLogin = false;
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
-	
-
 
 	public Login() {
 		Init();
 		setActions();
-		setVisible(true);
+
+		if (!autoLogin)
+			setVisible(true);
 	}
 
 	public void Init() {
 
 		_this = this;
-		
+
 		login_top_panel = new JPanel(null);
 		login_buttom_panel = new JPanel();
 
 		user_name_label = new JLabel("用户名：");
 		password_label = new JLabel("密码：");
 		user_name_text = new JTextField(10);
-		password_text =new JPasswordField(10);
+		password_text = new JPasswordField(10);
 		login_button = new JButton("登录");
 		register_label = new JLabel("用户注册");
 		foreget_password_label = new JLabel("忘记密码");
@@ -73,7 +73,7 @@ public class Login extends JFrame implements UI_code {
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
+
 	private void initialize_ui() {
 		Box hBox_user = Box.createHorizontalBox();
 		hBox_user.add(user_name_label);
@@ -205,23 +205,21 @@ public class Login extends JFrame implements UI_code {
 				fileWriter.write(username);
 				fileWriter.close();
 				if (remenber_password_checkbox.isSelected()) {
-					// MessageDigest md5 =
-					// MessageDigest.getInstance("MD5");
-					// BASE64Encoder base64 = new BASE64Encoder();
-					// String endcoded_password =
-					// base64.encode(md5.digest(password.getBytes("utf-8")));
-					encoded_password = new BASE64Encoder()
+					/*MessageDigest md5 = MessageDigest.getInstance("MD5");
+					BASE64Encoder base64 = new BASE64Encoder();
+					String endcoded_password = base64.encode(md5.digest(password.getBytes("utf-8")));*/
+					encrypted_password = new BASE64Encoder()
 							.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 					fileWriter = new FileWriter(new File("./user_setting" + username.hashCode() + ".in"));
 					fileWriter.write(username + '\n');
-					fileWriter.write(encoded_password);
+					fileWriter.write(encrypted_password);
 					fileWriter.close();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			// TODO �л��������棡
-//			JOptionPane.showMessageDialog(_this.getContentPane(), "�ɹ���", "��½��ʾ", JOptionPane.INFORMATION_MESSAGE);
+			// TODO Login
+			autoLogin = true;
 			_this.dispose();
 			Start_ui aStart_ui = new Start_ui(USER_MAIN_VIEW);
 			aStart_ui.start();
@@ -236,13 +234,13 @@ public class Login extends JFrame implements UI_code {
 		if (password.isEmpty())
 			return Error_code.Empty_password;
 		try {
-			encoded_password = new BASE64Encoder()
+			encrypted_password = new BASE64Encoder()
 					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		// TODO Check online!
-		return UrlRequest.Check_login(username, encoded_password);
+		return UrlRequest.Check_login(username, encrypted_password);
 	}
 
 	public static void main(String[] args) {

@@ -4,16 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import controller.User_info;
-import controller.User_info.Frieds_Base_Info;
+import controller.User_info.Friends_Base_Info;
 import sun.misc.BASE64Encoder;
 import ui.Error_code;
 
@@ -24,6 +27,9 @@ public class UrlRequest {
 	private static final String Check_Login = "login/index/";
 	private static final String Check_Register = "register/index/";
 	private static final String Query_friends = "friends/index/";
+	private static final String Logout = "logout/index/";
+	private static final String UserInfo = "userinfo/";
+	
 
 	private static final String State_Fail = "Failed"; // Useless
 	private static final String State_SQL_Failure = "SQL_Failure";
@@ -35,14 +41,30 @@ public class UrlRequest {
 
 	class Query_Friends_Result {
 		private String result;
-		private HashMap<String/* id */, Frieds_Base_Info> data;
+		private Friends_Base_Info[] data;
 
 		public String getResult() {
 			return result;
 		}
 
-		public HashMap<String, Frieds_Base_Info> getFriendsList() {
-			return data;
+		public Map<String, Friends_Base_Info> getFriendsList() {
+			int length = data.length;
+			System.out.println(this);
+			Map<String, Friends_Base_Info> friends_list = new HashMap<String, Friends_Base_Info>();
+			for(int i = 0; i < length; i++){
+				data[i].setID(Query_ID(data[i].getUserName()));
+				friends_list.put(data[i].getID(),data[i]);
+			}
+			return friends_list;
+		}
+		
+		@Override
+		public String toString(){
+			String result = null;
+			for(Friends_Base_Info aBase_Info : data){
+				System.out.println(aBase_Info.getUserName() + "  " + aBase_Info.getStatus());
+			}
+			return null;
 		}
 	}
 
@@ -77,6 +99,7 @@ public class UrlRequest {
 				buffer.append(line);
 			}
 			line = buffer.toString();
+			System.out.println(line);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,6 +107,18 @@ public class UrlRequest {
 		return line;
 	}
 
+	public static String Query_ID(String user_name){
+		URL query_id = null;
+		try {
+			query_id = new URL(SITE_URL + UserInfo + "id/" + user_name);
+			System.out.println(query_id);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return process_URL(query_id);
+	}
+	
 	public static Error_code Check_login(String user_name, String password_encoded) {
 
 		HashMap<String, String> result = null;
@@ -91,6 +126,7 @@ public class UrlRequest {
 
 		try {
 			URL login = new URL(SITE_URL + Check_Login + user_name + '/' + password_encoded);
+			System.out.println(login);
 			Gson jGson = new GsonBuilder().create();
 			result = jGson.fromJson(process_URL(login), HashMap.class);
 		} catch (IOException e) {
@@ -126,14 +162,24 @@ public class UrlRequest {
 		Query_Friends_Result query_Result = null;
 		try {
 			URL query_friends = new URL(SITE_URL + Query_friends + instance.getID());
-			Gson jGson = new GsonBuilder().create();
+			Gson jGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			query_Result = jGson.fromJson(process_URL(query_friends), Query_Friends_Result.class);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		Error_code to_return = getReturn(query_Result.getResult());
-		if (getReturn(query_Result.getResult()) == Error_code.Success)
+		if (to_return == Error_code.Success)
 			instance.setfrientList(query_Result.getFriendsList());
 		return to_return;
+	}
+
+	public static void Logout(){
+		try {
+			URL logout = new URL(SITE_URL + Logout + instance.getID());
+			process_URL(logout);
+			instance.restore();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

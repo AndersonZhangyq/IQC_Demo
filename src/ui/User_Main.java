@@ -25,7 +25,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import controller.User_info;
-import controller.User_info.Frieds_Base_Info;
+import controller.User_info.Friends_Base_Info;
+import sun.reflect.generics.tree.Tree;
+import url_request.UrlRequest;
 
 public class User_Main extends JFrame {
 
@@ -144,8 +146,10 @@ public class User_Main extends JFrame {
 	 */
 
 	public User_Main() {
+		UrlRequest.Get_User_Friends();
 		Init();
 		setActions();
+		setVisible(true);
 	}
 
 	private void Init() {
@@ -179,7 +183,7 @@ public class User_Main extends JFrame {
 		 * 
 		 * }
 		 */
-		HashMap<String, Frieds_Base_Info> friend_List = user_info.getfriendList();
+		Map<String, Friends_Base_Info> friend_List = user_info.getfriendList();
 		Iterator iterator = friend_List.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Entry) iterator.next();
