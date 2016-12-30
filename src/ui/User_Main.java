@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,9 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
+import controller.Friends_Base_Info;
 import controller.User_info;
-import controller.User_info.Friends_Base_Info;
-import sun.reflect.generics.tree.Tree;
 import url_request.UrlRequest;
 
 public class User_Main extends JFrame {
@@ -187,7 +185,8 @@ public class User_Main extends JFrame {
 		Iterator iterator = friend_List.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Entry) iterator.next();
-			User_info_panel user_info_panel = new User_info_panel(new String[] { "  ", "  " });
+			Friends_Base_Info example = (Friends_Base_Info) entry.getValue();
+			User_info_panel user_info_panel = new User_info_panel(new String[] {example.getUserName(), " ", example.getStatus() });
 			vBox_all.add(user_info_panel);
 		}
 		this.add(vBox_all);

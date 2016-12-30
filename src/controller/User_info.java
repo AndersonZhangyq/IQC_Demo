@@ -3,28 +3,6 @@ package controller;
 import java.util.Map;
 
 public class User_info {
-	
-	public class Friends_Base_Info{
-		private String user_name;
-		private String status;
-		private String id;
-		
-		public String getUserName(){
-			return user_name;
-		}
-		
-		public String getStatus(){
-			return status;
-		}
-		
-		public String getID(){
-			return id;
-		}
-		
-		public void setID(String id){
-			this.id = id;
-		}
-	}
 		
 	private static class User_info_holder{
 		private static final User_info INSTANCE = new User_info();
