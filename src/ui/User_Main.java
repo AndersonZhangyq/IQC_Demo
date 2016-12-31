@@ -132,8 +132,8 @@ public class User_Main extends JFrame implements UI_code {
 					String friend_id = old.getName();
 					String friend_name = user_info.getfriendList().get(friend_id).getUserName();
 					String friend_ip = UrlRequest.Query_IP(friend_id);
-					chat_UI.setChat_Info(new Chat_Info(user_info.getUser_name(), user_info.getID(), friend_name,friend_id,friend_ip));
 					chat_UI.start();
+					chat_UI.setChat_Info(new Chat_Info(user_info.getUser_name(), user_info.getID(), friend_name,friend_id,friend_ip));
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					right_clicked = new JPopupMenu();
 					JMenuItem show_nick_name = new JMenuItem("显示昵称");

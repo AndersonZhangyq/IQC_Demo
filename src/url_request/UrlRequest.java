@@ -36,7 +36,7 @@ class Query_Friends_Result {
 		return result;
 	}
 
-	// 根据返回的json获得 Friend_Relation[] data    遍历数组 data ，利用 好友 id 
+	// 根据返回的json获得 Friend_Relation[] data 遍历数组 data ，利用 好友 id
 	public Map<String, Friend_Base_Info> getFriendsList() {
 		int length = data.length;
 		System.out.println(this);
@@ -44,7 +44,7 @@ class Query_Friends_Result {
 		for (int i = 0; i < length; i++) {
 			Map<String, String> info = UrlRequest.Query_info(data[0].user_friend);
 			Friend_Base_Info example = new Friend_Base_Info(info.get("user_name"), info.get("status"),
-					data[i].user_friend,info.get("remark_name"));
+					data[i].user_friend, info.get("remark_name"));
 			friends_list.put(data[i].user_friend, example);
 		}
 		return friends_list;
@@ -63,7 +63,7 @@ class Query_Friends_Result {
 public class UrlRequest {
 	static User_info instance = User_info.getInstance();
 
-	private static final String SITE_URL = "http://localhost/java_web/index.php/";
+	private static final String SITE_URL = "http://115.159.74.93/java_web/index.php/";
 	private static final String Check_Login = "login/index/";
 	private static final String Check_Register = "register/index/";
 	private static final String Query_friends = "friends/index/";
@@ -103,6 +103,7 @@ public class UrlRequest {
 		String line = null;
 		try {
 			url_connection = (HttpURLConnection) to_connect.openConnection();
+			url_connection.setRequestProperty("User-Agent", "Java_Client");
 			url_connection.connect();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url_connection.getInputStream()));
 			StringBuffer buffer = new StringBuffer();
@@ -110,7 +111,7 @@ public class UrlRequest {
 				buffer.append(line);
 			}
 			line = buffer.toString();
-			System.out.println(line);
+			System.out.println("result for URL : " + line);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -132,7 +133,7 @@ public class UrlRequest {
 		}
 		return result;
 	}
-	
+
 	public static String Query_IP(String user_id) {
 		String result = null;
 		try {
@@ -144,18 +145,19 @@ public class UrlRequest {
 		return result;
 	}
 
-
-	public static Error_code Check_login(String user_name, String password_encoded) {
+	public static Error_code Check_login(String user_name, String password) {
 
 		HashMap<String, String> result = null;
 		user_name = Base64.encode(user_name.getBytes());
 
 		try {
-			URL login = new URL(SITE_URL + Check_Login + user_name + '/' + password_encoded);
-			System.out.println(login);
+			String encrypted_password = new BASE64Encoder()
+					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
+			URL login = new URL(SITE_URL + Check_Login + user_name + '/' + encrypted_password);
+			System.out.println("URL : " + login);
 			Gson jGson = new GsonBuilder().create();
 			result = jGson.fromJson(process_URL(login), HashMap.class);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			return Error_code.Unknow_Error;
 		}
@@ -172,7 +174,8 @@ public class UrlRequest {
 		user_name = Base64.encode(user_name.getBytes());
 		nick_name = Base64.encode(nick_name.getBytes());
 		try {
-			password = new BASE64Encoder().encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
+			String encrypted_password = new BASE64Encoder()
+					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 			URL register = new URL(SITE_URL + Check_Register + user_name + '/' + password + '/' + nick_name);
 			Gson jGson = new GsonBuilder().create();
 			result = jGson.fromJson(process_URL(register), HashMap.class);
@@ -198,12 +201,13 @@ public class UrlRequest {
 			instance.setfrientList(query_Result.getFriendsList());
 		return to_return;
 	}
-	
+
 	public static Error_code sendMessage(String message_from, String message_to, String message_text) {
 		Map<String, String> result = null;
 		try {
 			message_text = Base64.encode(message_text.getBytes());
-			URL send_Message = new URL(SITE_URL + Message + "record_message/" + message_from + "/" + message_to + "/" + message_text);
+			URL send_Message = new URL(
+					SITE_URL + Message + "record_message/" + message_from + "/" + message_to + "/" + message_text);
 			String get = process_URL(send_Message);
 			Gson gson = new Gson();
 			result = gson.fromJson(get, HashMap.class);
@@ -212,7 +216,7 @@ public class UrlRequest {
 		}
 		return getReturn(result.get("result"));
 	}
-	
+
 	public static void Logout() {
 		try {
 			URL logout = new URL(SITE_URL + Logout + instance.getID());

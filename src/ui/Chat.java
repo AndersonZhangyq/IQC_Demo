@@ -25,7 +25,7 @@ public class Chat extends JFrame {
 	JButton send_button;
 	JComboBox<String> item_combo;
 	JScrollPane scrollPane_top, scrollPane_bottom;
-	Message_Driver message_Driver = Message_Driver.getInstance();
+	//Message_Driver message_Driver = Message_Driver.getInstance();
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -45,7 +45,7 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String message_text = send_message_textarea.getText();
 				UrlRequest.sendMessage(chat_Info.getUser_from_id(), chat_Info.getUser_to_id(), message_text);
-				message_Driver.Communicate(message_text.getBytes());
+				//message_Driver.Communicate(message_text.getBytes());
 			}
 		});
 	}

@@ -238,14 +238,8 @@ public class Login extends JFrame implements UI_code {
 			return Error_code.Empty_userName;
 		if (password.isEmpty())
 			return Error_code.Empty_password;
-		try {
-			encrypted_password = new BASE64Encoder()
-					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		// TODO Check online!
-		return UrlRequest.Check_login(username, encrypted_password);
+		return UrlRequest.Check_login(username, password);
 	}
 
 	public static void main(String[] args) {
