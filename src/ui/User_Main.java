@@ -23,15 +23,69 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
-import controller.Friends_Base_Info;
+import controller.Chat_Info;
+import controller.Friend_Base_Info;
 import controller.User_info;
 import url_request.UrlRequest;
 
-public class User_Main extends JFrame {
+public class User_Main extends JFrame implements UI_code {
 
-	/* user_info userName userSetName userState */
-	class User_info_panel extends JPanel {
-		String[] user_info;
+	JMenuBar head_menu;
+	JMenu search_menu, settings_menu, logoff_menu;
+	JScrollPane main_scrollpane;
+	Box vBox_all;
+	int friend_number;
+	User_info user_info = User_info.getInstance();
+
+	public static final int DEFAULT_WIDTH = 400;
+	public static final int DEFAULT_HEIGHT = 400;
+
+	public User_Main() {
+		UrlRequest.Get_User_Friends();
+		Init();
+		setActions();
+		setVisible(true);
+	}
+
+	private void Init() {
+		head_menu = new JMenuBar();
+		setJMenuBar(head_menu);
+
+		search_menu = new JMenu("查找");
+		settings_menu = new JMenu("设置");
+		logoff_menu = new JMenu("注销");
+
+		head_menu.add(search_menu);
+		head_menu.add(settings_menu);
+		head_menu.add(logoff_menu);
+		vBox_all = Box.createVerticalBox();
+
+		main_scrollpane = new JScrollPane();
+
+		initialize_ui();
+
+		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+
+	private void initialize_ui() {
+		Map<String, Friend_Base_Info> friend_List = user_info.getfriendList();
+		Iterator iterator = friend_List.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Entry) iterator.next();
+			Friend_info_panel user_info_panel = new Friend_info_panel((Friend_Base_Info) entry.getValue());
+			vBox_all.add(user_info_panel);
+		}
+		this.add(vBox_all);
+	}
+
+	private void setActions() {
+	}
+
+	/* user_info userName userRemarkName userStatus */
+	class Friend_info_panel extends JPanel {
+		Friend_Base_Info friend_info;
+		JLabel friend_user_name, friend_remark_name, friend_status;
 		JPanel _this = this;
 		boolean isshown = true;
 		JPopupMenu right_clicked;
@@ -73,8 +127,13 @@ public class User_Main extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				// TODO Show chat frame
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					JOptionPane.showMessageDialog(getComponent(0), "点击成功", "点击事件",
-							JOptionPane.INFORMATION_MESSAGE);
+					JPanel old = (JPanel) e.getSource();
+					Start_ui chat_UI = new Start_ui(CHAT_VIEW);
+					String friend_id = old.getName();
+					String friend_name = user_info.getfriendList().get(friend_id).getUserName();
+					String friend_ip = UrlRequest.Query_IP(friend_id);
+					chat_UI.setChat_Info(new Chat_Info(user_info.getUser_name(), user_info.getID(), friend_name,friend_id,friend_ip));
+					chat_UI.start();
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					right_clicked = new JPopupMenu();
 					JMenuItem show_nick_name = new JMenuItem("显示昵称");
@@ -88,16 +147,22 @@ public class User_Main extends JFrame {
 			}
 		};
 
-		public User_info_panel(String[] user_info) {
-			this.user_info = user_info.clone();
+		public Friend_info_panel(Friend_Base_Info friend_info) {
+			this.friend_info = friend_info;
 			this.setLayout(new FlowLayout(FlowLayout.LEFT));
-			JLabel user_name = new JLabel(user_info[0]);
-			JLabel user_set_name = new JLabel("(" + user_info[1] + ")");
-			JLabel user_state = new JLabel(user_info[2]);
-			this.add(user_name);
-			this.add(user_set_name);
-			this.add(user_state);
-			this.add(user_state);
+			friend_user_name = new JLabel(friend_info.getUserName());
+			this.add(friend_user_name);
+
+			if (friend_info.getRemarkName() != null) {
+				if (friend_info.getRemarkName().length() != 0) {
+					friend_remark_name = new JLabel("(" + friend_info.getRemarkName() + ")");
+					this.add(friend_remark_name);
+				}
+			}
+
+			friend_status = new JLabel(friend_info.getStatus());
+			this.setName(friend_info.getID());
+			this.add(friend_status);
 			this.addMouseListener(show_chat_frame);
 			this.addMouseMotionListener(change_background);
 		}
@@ -123,76 +188,4 @@ public class User_Main extends JFrame {
 			}
 		}
 	}
-
-	JMenuBar head_menu;
-	JMenu search_menu, settings_menu, logoff_menu;
-	JScrollPane main_scrollpane;
-	// GroupJButton[] Group_and_friends;
-	// Box[] vBox;
-	Box vBox_all;
-	// int group_number;
-	int friend_number;
-	User_info user_info = User_info.getInstance();
-
-	public static final int DEFAULT_WIDTH = 400;
-	public static final int DEFAULT_HEIGHT = 400;
-
-	/*
-	 * public user_main_ui(int group_number, Vector[] friends_info) {
-	 * this.group_number = group_number; this.friends_info = friends_info;
-	 * Init(); setActions(); }
-	 */
-
-	public User_Main() {
-		UrlRequest.Get_User_Friends();
-		Init();
-		setActions();
-		setVisible(true);
-	}
-
-	private void Init() {
-		head_menu = new JMenuBar();
-		setJMenuBar(head_menu);
-
-		search_menu = new JMenu("查找");
-		settings_menu = new JMenu("设置");
-		logoff_menu = new JMenu("注销");
-
-		head_menu.add(search_menu);
-		head_menu.add(settings_menu);
-		head_menu.add(logoff_menu);
-		vBox_all = Box.createVerticalBox();
-
-		main_scrollpane = new JScrollPane();
-
-		initialize_ui();
-
-		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-	}
-
-	private void initialize_ui() {
-		/*
-		 * Group_and_friends = new GroupJButton[group_number]; for (int i = 0; i
-		 * < group_number; i++){ vBox[i] = Box.createVerticalBox();
-		 * Group_and_friends[i] = new GroupJButton();
-		 * Group_and_friends[i].setText((String) friends_info.elementAt(0)); Box
-		 * group_members_vBox = Box.createVerticalBox();
-		 * 
-		 * }
-		 */
-		Map<String, Friends_Base_Info> friend_List = user_info.getfriendList();
-		Iterator iterator = friend_List.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry entry = (Entry) iterator.next();
-			Friends_Base_Info example = (Friends_Base_Info) entry.getValue();
-			User_info_panel user_info_panel = new User_info_panel(new String[] {example.getUserName(), " ", example.getStatus() });
-			vBox_all.add(user_info_panel);
-		}
-		this.add(vBox_all);
-	}
-
-	private void setActions() {
-	}
-
 }

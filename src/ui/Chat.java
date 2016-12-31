@@ -13,21 +13,25 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import controller.Chat_Info;
+import controller.Message_Driver;
+import url_request.UrlRequest;
+
 public class Chat extends JFrame {
 
-	/**
-	 * 
-	 */
+	Chat_Info chat_Info;
 	private static final long serialVersionUID = 1L;
 	JTextArea message_textarea, send_message_textarea;
 	JButton send_button;
 	JComboBox<String> item_combo;
 	JScrollPane scrollPane_top, scrollPane_bottom;
+	Message_Driver message_Driver = Message_Driver.getInstance();
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
 
-	public Chat() {
+	public Chat(Chat_Info chat_Info) {
+		this.chat_Info = chat_Info;
 		Init();
 		setActions();
 		setVisible(true);
@@ -36,10 +40,12 @@ public class Chat extends JFrame {
 	private void setActions() {
 		// TODO ʵ�ֵ��������Ϣ��Ϣ�ķ��ͣ�
 		send_button.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+				String message_text = send_message_textarea.getText();
+				UrlRequest.sendMessage(chat_Info.getUser_from_id(), chat_Info.getUser_to_id(), message_text);
+				message_Driver.Communicate(message_text.getBytes());
 			}
 		});
 	}
@@ -75,7 +81,7 @@ public class Chat extends JFrame {
 	private void Init() {
 		message_textarea = new JTextArea();
 		send_message_textarea = new JTextArea();
-		send_button = new JButton("����");
+		send_button = new JButton("发送");
 		item_combo = new JComboBox<>();
 		scrollPane_bottom = new JScrollPane(message_textarea);
 		scrollPane_top = new JScrollPane(send_message_textarea);
@@ -86,9 +92,4 @@ public class Chat extends JFrame {
 		setSize(570, 400);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
-	public static void main(String[] args) {
-		new Chat().setVisible(true);
-	}
-
 }

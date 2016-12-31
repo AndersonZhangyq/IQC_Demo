@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import controller.User_info;
 import sun.misc.BASE64Encoder;
 import url_request.UrlRequest;
 
@@ -31,8 +32,10 @@ public class Register extends JFrame implements UI_code {
 	JLabel user_name_info_label, nick_name_info_label, password_info_label, password_to_confirm_info_label;
 	JButton register_button;
 	JFrame _this;
-	String username, password, nick_name, password_to_comfirm, encrypted_password;
+	String user_name, password, nick_name, password_to_comfirm, encrypted_password;
 	boolean user_name_set, password_set, password_to_confirm_set, nick_name_set;
+	
+	User_info user_info = User_info.getInstance();
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -90,10 +93,11 @@ public class Register extends JFrame implements UI_code {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				switch (UrlRequest.Check_Register(username, encrypted_password, nick_name)) {
+				switch (UrlRequest.Check_Register(user_name, encrypted_password, nick_name)) {
 				case Success:
 					JOptionPane.showMessageDialog(_this.getContentPane(), "注册成功\n按下确定后将自动登录！", "注册信息",
 							JOptionPane.INFORMATION_MESSAGE);
+					user_info.setUser_name(user_name);
 					_this.dispose();
 					new Start_ui(USER_MAIN_VIEW).start();
 					break;
@@ -113,14 +117,14 @@ public class Register extends JFrame implements UI_code {
 			public void focusLost(FocusEvent arg0) {
 				Object source = arg0.getSource();
 				if (source == user_name_text) {
-					username = user_name_text.getText();
+					user_name = user_name_text.getText();
 					user_name_info_label.setText("");
-					if (username.isEmpty()) {
+					if (user_name.isEmpty()) {
 						user_name_info_label.setText("请输入用户名！");
 						return;
 					}
 					String emailReg = "(([a-zA-Z]?[0-9]+)|([a-zA-Z]+[0-9]?))@([a-zA-z0-9]{1,}.){1,3}[a-zA-z]{1,}";
-					Matcher email_match = Pattern.compile(emailReg).matcher(username);
+					Matcher email_match = Pattern.compile(emailReg).matcher(user_name);
 					if (!email_match.find()) {
 						user_name_info_label.setText("用户名格式错误！");
 					}

@@ -13,9 +13,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
-import controller.Friends_Base_Info;
+import controller.Friend_Base_Info;
 import controller.User_info;
 import sun.misc.BASE64Encoder;
 import ui.Error_code;
@@ -23,6 +24,7 @@ import ui.Error_code;
 class Friend_Relation {
 	String user_origin;
 	String user_friend;
+	String remark_name;
 }
 
 class Query_Friends_Result {
@@ -34,14 +36,15 @@ class Query_Friends_Result {
 		return result;
 	}
 
-	public Map<String, Friends_Base_Info> getFriendsList() {
+	// 根据返回的json获得 Friend_Relation[] data    遍历数组 data ，利用 好友 id 
+	public Map<String, Friend_Base_Info> getFriendsList() {
 		int length = data.length;
 		System.out.println(this);
-		Map<String, Friends_Base_Info> friends_list = new HashMap<String, Friends_Base_Info>();
+		Map<String, Friend_Base_Info> friends_list = new HashMap<String, Friend_Base_Info>();
 		for (int i = 0; i < length; i++) {
 			Map<String, String> info = UrlRequest.Query_info(data[0].user_friend);
-			Friends_Base_Info example = new Friends_Base_Info(info.get("user_name"), info.get("status"),
-					data[i].user_friend);
+			Friend_Base_Info example = new Friend_Base_Info(info.get("user_name"), info.get("status"),
+					data[i].user_friend,info.get("remark_name"));
 			friends_list.put(data[i].user_friend, example);
 		}
 		return friends_list;
@@ -66,6 +69,7 @@ public class UrlRequest {
 	private static final String Query_friends = "friends/index/";
 	private static final String Logout = "logout/index/";
 	private static final String UserInfo = "userinfo/";
+	private static final String Message = "message/";
 
 	private static final String State_Fail = "Failed"; // Useless
 	private static final String State_SQL_Failure = "SQL_Failure";
@@ -128,6 +132,18 @@ public class UrlRequest {
 		}
 		return result;
 	}
+	
+	public static String Query_IP(String user_id) {
+		String result = null;
+		try {
+			URL query_ip = new URL(SITE_URL + UserInfo + "ip/" + user_id);
+			result = process_URL(query_ip);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return result;
+	}
+
 
 	public static Error_code Check_login(String user_name, String password_encoded) {
 
@@ -182,7 +198,21 @@ public class UrlRequest {
 			instance.setfrientList(query_Result.getFriendsList());
 		return to_return;
 	}
-
+	
+	public static Error_code sendMessage(String message_from, String message_to, String message_text) {
+		Map<String, String> result = null;
+		try {
+			message_text = Base64.encode(message_text.getBytes());
+			URL send_Message = new URL(SITE_URL + Message + "record_message/" + message_from + "/" + message_to + "/" + message_text);
+			String get = process_URL(send_Message);
+			Gson gson = new Gson();
+			result = gson.fromJson(get, HashMap.class);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return getReturn(result.get("result"));
+	}
+	
 	public static void Logout() {
 		try {
 			URL logout = new URL(SITE_URL + Logout + instance.getID());

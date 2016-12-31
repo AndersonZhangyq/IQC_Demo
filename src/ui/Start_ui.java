@@ -1,9 +1,16 @@
 package ui;
 
+import controller.Chat_Info;
+
 public class Start_ui extends Thread implements UI_code{
 	
 	private int requested_id;
+	public Chat_Info chat_Info;
 	
+	public void setChat_Info(Chat_Info chat_Info) {
+		this.chat_Info = chat_Info;
+	}
+
 	public Start_ui(int id){
 		requested_id = id;
 	}
@@ -20,7 +27,7 @@ public class Start_ui extends Thread implements UI_code{
 			new User_Main();
 			break;
 		case UI_code.CHAT_VIEW:
-			new Chat();
+			new Chat(chat_Info);;
 			break;
 		default:
 			break;

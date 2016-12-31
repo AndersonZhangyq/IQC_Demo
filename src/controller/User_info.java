@@ -8,8 +8,10 @@ public class User_info {
 		private static final User_info INSTANCE = new User_info();
 	}
 	
-	public String USER_ID = null;
-	public Map<String, Friends_Base_Info> friendList = null;
+	public String user_id;
+	public String user_name;
+
+	public Map<String, Friend_Base_Info> friendList = null;
 	
 	User_info instance = null;
 
@@ -19,26 +21,34 @@ public class User_info {
 	public static User_info getInstance() {
 		return User_info_holder.INSTANCE;
 	}
+
+	public String getUser_name() {
+		return user_name;
+	}
+
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
 	
 	public void setID(String id) {
-		USER_ID = id;
+		user_id = id;
 	}
 	
 	public String getID(){
-		return USER_ID;
+		return user_id;
 	}
 	
-	public void setfrientList(Map<String, Friends_Base_Info> map){
+	public void setfrientList(Map<String, Friend_Base_Info> map){
 		friendList = map;
 	}
 	
-	public Map<String, Friends_Base_Info> getfriendList() {
+	public Map<String, Friend_Base_Info> getfriendList() {
 		return friendList;
 	}
 	
 	/* When user log off, it must be restored! */
 	public void restore(){
-		USER_ID = null;
+		user_id = null;
 		friendList = null;
 	}
 }

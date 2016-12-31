@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import controller.User_info;
 import sun.misc.BASE64Encoder;
 import url_request.*;
 
@@ -36,6 +37,8 @@ public class Login extends JFrame implements UI_code {
 	JFrame _this;
 	String username, password, encrypted_password;
 	boolean autoLogin = false;
+	
+	User_info user_info = User_info.getInstance();
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -152,12 +155,10 @@ public class Login extends JFrame implements UI_code {
 				// TODO Auto-generated method stub
 				if (e.getSource() == foreget_password_label) {
 					_this.dispose();
-					Start_ui newone = new Start_ui(-1);
-					newone.start();
+					new Start_ui(-1).start();
 				} else if (e.getSource() == register_label) {
 					_this.dispose();
-					Start_ui newone = new Start_ui(REGISTER_VIEW);
-					newone.start();
+					new Start_ui(REGISTER_VIEW).start();
 				}
 			}
 		};
@@ -205,9 +206,12 @@ public class Login extends JFrame implements UI_code {
 				fileWriter.write(username);
 				fileWriter.close();
 				if (remenber_password_checkbox.isSelected()) {
-					/*MessageDigest md5 = MessageDigest.getInstance("MD5");
-					BASE64Encoder base64 = new BASE64Encoder();
-					String endcoded_password = base64.encode(md5.digest(password.getBytes("utf-8")));*/
+					/*
+					 * MessageDigest md5 = MessageDigest.getInstance("MD5");
+					 * BASE64Encoder base64 = new BASE64Encoder(); String
+					 * endcoded_password =
+					 * base64.encode(md5.digest(password.getBytes("utf-8")));
+					 */
 					encrypted_password = new BASE64Encoder()
 							.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 					fileWriter = new FileWriter(new File("./user_setting" + username.hashCode() + ".in"));
@@ -220,6 +224,7 @@ public class Login extends JFrame implements UI_code {
 			}
 			// TODO Login
 			autoLogin = true;
+			user_info.setUser_name(username);
 			_this.dispose();
 			Start_ui aStart_ui = new Start_ui(USER_MAIN_VIEW);
 			aStart_ui.start();

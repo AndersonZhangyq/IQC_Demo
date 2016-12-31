@@ -1,9 +1,10 @@
 package controller;
 
-public class Friends_Base_Info {
+public class Friend_Base_Info {
 	private String user_name;
 	private String status;
 	private String id;
+	private String remark_name;
 
 	public String getUserName() {
 		return user_name;
@@ -11,6 +12,9 @@ public class Friends_Base_Info {
 
 	public String getStatus() {
 		return status;
+	}
+	public String getRemarkName() {
+		return remark_name;
 	}
 
 	public String getID() {
@@ -21,9 +25,10 @@ public class Friends_Base_Info {
 		this.id = id;
 	}
 
-	public Friends_Base_Info(String user_name, String status, String id) {
+	public Friend_Base_Info(String user_name, String status, String id, String remark_name) {
 		this.id = id;
 		this.user_name = user_name;
 		this.status = status;
+		this.remark_name = remark_name;
 	}
 }
