@@ -1,6 +1,8 @@
-package controller;
+package defined_type;
 
 import java.util.Map;
+
+import controller.Friend_Base_Info;
 
 public class User_info {
 		

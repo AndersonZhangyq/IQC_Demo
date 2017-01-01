@@ -13,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.sun.glass.ui.TouchInputSupport;
+
 import controller.Chat_Info;
 import controller.Message_Driver;
 import url_request.UrlRequest;
@@ -25,7 +27,7 @@ public class Chat extends JFrame {
 	JButton send_button;
 	JComboBox<String> item_combo;
 	JScrollPane scrollPane_top, scrollPane_bottom;
-	//Message_Driver message_Driver = Message_Driver.getInstance();
+	Message_Driver message_Driver = new Message_Driver(this.message_textarea);
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;

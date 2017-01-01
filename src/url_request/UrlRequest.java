@@ -17,9 +17,9 @@ import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import controller.Friend_Base_Info;
-import controller.User_info;
+import defined_type.Error_code;
+import defined_type.User_info;
 import sun.misc.BASE64Encoder;
-import ui.Error_code;
 
 class Friend_Relation {
 	String user_origin;

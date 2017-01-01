@@ -1,4 +1,4 @@
-package ui;
+package defined_type;
 
 public interface UI_code {
 	public static final int LOGIN_VIEW = 1;

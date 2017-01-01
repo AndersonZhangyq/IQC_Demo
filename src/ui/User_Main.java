@@ -25,7 +25,8 @@ import javax.swing.JScrollPane;
 
 import controller.Chat_Info;
 import controller.Friend_Base_Info;
-import controller.User_info;
+import defined_type.UI_code;
+import defined_type.User_info;
 import url_request.UrlRequest;
 
 public class User_Main extends JFrame implements UI_code {

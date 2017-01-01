@@ -1,6 +1,7 @@
 package ui;
 
 import controller.Chat_Info;
+import defined_type.UI_code;
 
 public class Start_ui extends Thread implements UI_code{
 	

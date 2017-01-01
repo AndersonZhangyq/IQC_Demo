@@ -20,7 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import controller.User_info;
+import defined_type.Error_code;
+import defined_type.UI_code;
+import defined_type.User_info;
 import sun.misc.BASE64Encoder;
 import url_request.*;
 
