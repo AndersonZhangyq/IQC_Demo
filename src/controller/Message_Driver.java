@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -10,6 +11,8 @@ import java.util.Date;
 import javax.swing.JTextArea;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
 import defined_type.Message_info;
 import defined_type.User_info;
 
@@ -64,6 +67,7 @@ public class Message_Driver extends Thread {
 						User_info.getInstance().getUser_name(), to_send);
 				Gson gson = new Gson();
 				String message_jsoned = gson.toJson(message_info, Message_info.class);
+				System.out.println("Message sent: " + message_jsoned);
 				byte[] message_to_send = message_jsoned.getBytes();
 
 				sender_Packet = new DatagramPacket(message_to_send, message_to_send.length, address,
@@ -73,7 +77,6 @@ public class Message_Driver extends Thread {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			System.exit(0);
 		}
 	};
 
@@ -87,10 +90,14 @@ public class Message_Driver extends Thread {
 					receiver_Packet = new DatagramPacket(buff_receiver, buff_receiver.length);
 					datagramSocket.receive(receiver_Packet);
 					buff_receiver = receiver_Packet.getData();
-					String jsoned_message = String.valueOf(buff_receiver);
+					String jsoned_message = new String(buff_receiver);
+					System.out.println("Message received: " + jsoned_message);
+					
 					Gson gson = new Gson();
-					Message_info arrived_message = gson.fromJson(jsoned_message, Message_info.class);
-					message_show.append(arrived_message.getFullMessage());
+					JsonReader jsonReader = new JsonReader(new StringReader(jsoned_message));
+					jsonReader.setLenient(true);
+					Message_info arrived_message = gson.fromJson(jsonReader, Message_info.class);
+					message_show.append(message_show.getText() + "\n" + arrived_message.getFullMessage());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

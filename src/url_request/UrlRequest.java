@@ -42,7 +42,7 @@ class Query_Friends_Result {
 		System.out.println(this);
 		Map<String, Friend_Base_Info> friends_list = new HashMap<String, Friend_Base_Info>();
 		for (int i = 0; i < length; i++) {
-			Map<String, String> info = UrlRequest.Query_info(data[0].user_friend);
+			Map<String, String> info = UrlRequest.Query_info(data[i].user_friend);
 			Friend_Base_Info example = new Friend_Base_Info(info.get("user_name"), info.get("status"),
 					data[i].user_friend, info.get("remark_name"));
 			friends_list.put(data[i].user_friend, example);
@@ -102,6 +102,7 @@ public class UrlRequest {
 		HttpURLConnection url_connection;
 		String line = null;
 		try {
+			System.out.println("URL: " + to_connect);
 			url_connection = (HttpURLConnection) to_connect.openConnection();
 			url_connection.setRequestProperty("User-Agent", "Java_Client");
 			url_connection.connect();
@@ -154,7 +155,6 @@ public class UrlRequest {
 			String encrypted_password = new BASE64Encoder()
 					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 			URL login = new URL(SITE_URL + Check_Login + user_name + '/' + encrypted_password);
-			System.out.println("URL : " + login);
 			Gson jGson = new GsonBuilder().create();
 			result = jGson.fromJson(process_URL(login), HashMap.class);
 		} catch (Exception e) {

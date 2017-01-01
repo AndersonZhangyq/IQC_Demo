@@ -23,11 +23,11 @@ public class Chat extends JFrame {
 
 	Chat_Info chat_Info;
 	private static final long serialVersionUID = 1L;
-	JTextArea message_textarea, send_message_textarea;
+	JTextArea show_message_textarea, send_message_textarea;
 	JButton send_button;
 	JComboBox<String> item_combo;
 	JScrollPane scrollPane_top, scrollPane_bottom;
-	Message_Driver message_Driver = new Message_Driver(this.message_textarea);
+	Message_Driver message_Driver;
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -36,18 +36,19 @@ public class Chat extends JFrame {
 		this.chat_Info = chat_Info;
 		Init();
 		setActions();
+		message_Driver = new Message_Driver(this.show_message_textarea);
 		setVisible(true);
 	}
 
 	private void setActions() {
-		// TODO ʵ�ֵ��������Ϣ��Ϣ�ķ��ͣ�
 		send_button.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String message_text = send_message_textarea.getText();
 				UrlRequest.sendMessage(chat_Info.getUser_from_id(), chat_Info.getUser_to_id(), message_text);
-				//message_Driver.Communicate(message_text.getBytes());
+				message_Driver.sendMessage(message_text);
+				show_message_textarea.setText("");
 			}
 		});
 	}
@@ -57,7 +58,7 @@ public class Chat extends JFrame {
 		item_combo.setMaximumSize(new Dimension(100, 27));
 		item_combo.setModel(new DefaultComboBoxModel<String>(new String[] { "按 Enter", "按 Ctrl+Enter" }));
 
-		message_textarea.setPreferredSize(new Dimension(4, 130));
+		show_message_textarea.setPreferredSize(new Dimension(4, 130));
 		scrollPane_top.setPreferredSize(new Dimension(6, 130));
 
 		Box hBox_button = Box.createHorizontalBox();
@@ -81,17 +82,18 @@ public class Chat extends JFrame {
 	}
 
 	private void Init() {
-		message_textarea = new JTextArea();
+		show_message_textarea = new JTextArea();
+		show_message_textarea.setEditable(false);
+		
 		send_message_textarea = new JTextArea();
 		send_button = new JButton("发送");
 		item_combo = new JComboBox<>();
-		scrollPane_bottom = new JScrollPane(message_textarea);
-		scrollPane_top = new JScrollPane(send_message_textarea);
+		scrollPane_top = new JScrollPane(show_message_textarea);
+		scrollPane_bottom = new JScrollPane(send_message_textarea);
 
 		initialize_ui();
 
 		setResizable(false);
 		setSize(570, 400);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }

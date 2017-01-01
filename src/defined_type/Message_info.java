@@ -1,7 +1,5 @@
 package defined_type;
 
-import javafx.scene.chart.PieChart.Data;
-
 public class Message_info {
 	private String date;
 	private String user_name;
@@ -14,6 +12,6 @@ public class Message_info {
 	}
 	
 	public String getFullMessage(){
-		return date + " " + user_name + "\n" + message;
+		return new String(date + " " + user_name + "\n" + message);
 	}
 }
