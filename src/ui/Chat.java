@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -21,6 +23,7 @@ import url_request.UrlRequest;
 
 public class Chat extends JFrame {
 
+	JFrame _this;
 	Chat_Info chat_Info;
 	private static final long serialVersionUID = 1L;
 	JTextArea show_message_textarea, send_message_textarea;
@@ -82,6 +85,8 @@ public class Chat extends JFrame {
 	}
 
 	private void Init() {
+		_this = this;
+		
 		show_message_textarea = new JTextArea();
 		show_message_textarea.setEditable(false);
 		
@@ -95,5 +100,49 @@ public class Chat extends JFrame {
 
 		setResizable(false);
 		setSize(570, 400);
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				_this.dispose();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 }

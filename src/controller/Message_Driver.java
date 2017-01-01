@@ -8,8 +8,6 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JTextArea;
-
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -19,30 +17,27 @@ import defined_type.User_info;
 public class Message_Driver extends Thread {
 
 	private String USER_ADDRESS = "127.0.0.1";
-//	private final int Communication_Port = 8888;
+	// private final int Communication_Port = 8888;
 	byte[] buff_receiver, buff_sender;
 	DatagramSocket datagramSocket;
 	DatagramPacket sender_Packet, receiver_Packet;
 	String to_send, received;
 	InetAddress address;
 	Receiver receiver;
-	JTextArea message_show;
 
-	public Message_Driver(JTextArea message_show) {
+	public Message_Driver() {
 		try {
 			address = InetAddress.getByName(USER_ADDRESS);
 			buff_receiver = new byte[10240];
 			buff_sender = new byte[10240];
 			datagramSocket = new DatagramSocket();
-			this.message_show = message_show;
-			start_receiving();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void start_receiving() {
+	public void start_receiving() {
 		// TODO Auto-generated method stub
 		try {
 			receiver = new Receiver();
@@ -92,13 +87,12 @@ public class Message_Driver extends Thread {
 					buff_receiver = receiver_Packet.getData();
 					String jsoned_message = new String(buff_receiver);
 					System.out.println("Message received: " + jsoned_message);
-					
+
 					Gson gson = new Gson();
 					JsonReader jsonReader = new JsonReader(new StringReader(jsoned_message));
 					jsonReader.setLenient(true);
 					Message_info arrived_message = gson.fromJson(jsonReader, Message_info.class);
-					message_show.append(message_show.getText() + "\n" + arrived_message.getFullMessage());
-				} catch (Exception e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}

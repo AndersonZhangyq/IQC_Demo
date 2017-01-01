@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -37,6 +37,8 @@ public class User_Main extends JFrame implements UI_code {
 	Box vBox_all;
 	int friend_number;
 	User_info user_info = User_info.getInstance();
+	boolean isshown = true;
+	JPopupMenu right_clicked;
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -61,8 +63,6 @@ public class User_Main extends JFrame implements UI_code {
 		head_menu.add(logoff_menu);
 		vBox_all = Box.createVerticalBox();
 
-		main_scrollpane = new JScrollPane();
-
 		initialize_ui();
 
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -75,12 +75,57 @@ public class User_Main extends JFrame implements UI_code {
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Entry) iterator.next();
 			Friend_info_panel user_info_panel = new Friend_info_panel((Friend_Base_Info) entry.getValue());
+			user_info_panel.setMaximumSize(new Dimension(32767, 40));
+			user_info_panel.setPreferredSize(new Dimension(200, 40));
 			vBox_all.add(user_info_panel);
 		}
-		this.add(vBox_all);
+		main_scrollpane = new JScrollPane(vBox_all);
+		this.add(main_scrollpane);
+
 	}
 
 	private void setActions() {
+		main_scrollpane.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					right_clicked = new JPopupMenu();
+					JMenuItem show_nick_name = new JMenuItem("显示昵称");
+					JMenuItem show_online_friends = new JMenuItem("显示在线好友");
+					JMenuItem refresh = new JMenuItem("刷新好友列表");
+					right_clicked.add(show_nick_name);
+					right_clicked.add(show_online_friends);
+					right_clicked.add(refresh);
+					right_clicked.show(e.getComponent(), e.getX() - 5, e.getY() - 5);
+				}
+
+			}
+		});
 	}
 
 	/* user_info userName userRemarkName userStatus */
@@ -134,12 +179,15 @@ public class User_Main extends JFrame implements UI_code {
 					String friend_name = user_info.getfriendList().get(friend_id).getUserName();
 					String friend_ip = UrlRequest.Query_IP(friend_id);
 					chat_UI.start();
-					chat_UI.setChat_Info(new Chat_Info(user_info.getUser_name(), user_info.getID(), friend_name,friend_id,friend_ip));
+					chat_UI.setChat_Info(new Chat_Info(user_info.getUser_name(), user_info.getID(), friend_name,
+							friend_id, friend_ip));
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					right_clicked = new JPopupMenu();
+					JMenuItem remark_name = new JMenuItem("设置昵称");
 					JMenuItem show_nick_name = new JMenuItem("显示昵称");
 					JMenuItem show_online_friends = new JMenuItem("显示在线好友");
 					JMenuItem refresh = new JMenuItem("刷新好友列表");
+					right_clicked.add(remark_name);
 					right_clicked.add(show_nick_name);
 					right_clicked.add(show_online_friends);
 					right_clicked.add(refresh);
