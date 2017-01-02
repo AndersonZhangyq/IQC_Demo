@@ -1,6 +1,9 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -9,8 +12,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.management.ManagementFactory;
 import java.security.MessageDigest;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -39,13 +42,17 @@ public class Login extends JFrame implements UI_code {
 	JFrame _this;
 	String username, password, encrypted_password;
 	boolean autoLogin = false;
-	
+	boolean allow_auto_login = true;
+
 	User_info user_info = User_info.getInstance();
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
 
-	public Login() {
+	public Login(boolean allow_auto_login) {
+		this.allow_auto_login = allow_auto_login;
+		String name = ManagementFactory.getRuntimeMXBean().getName();
+		System.out.println("Login PID: " + name);
 		Init();
 		setActions();
 
@@ -77,34 +84,75 @@ public class Login extends JFrame implements UI_code {
 		this.setResizable(false);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("登录");
 	}
 
 	private void initialize_ui() {
-		Box hBox_user = Box.createHorizontalBox();
-		hBox_user.add(user_name_label);
-		hBox_user.add(user_name_text);
-		hBox_user.add(register_label);
+		getContentPane().setLayout(new BorderLayout(0, 0));
 
-		Box hBox_pass = Box.createHorizontalBox();
-		hBox_pass.add(password_label);
-		hBox_pass.add(password_text);
-		hBox_pass.add(foreget_password_label);
+		JPanel panel = new JPanel();
+		getContentPane().add(panel,BorderLayout.CENTER);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[] { 30, 60, 200, 60, 30 };
+		gbl_panel.rowHeights = new int[] { 27, 27, 27, 30, 0 };
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
+		panel.setLayout(gbl_panel);
 
-		Box hBox_radio = Box.createHorizontalBox();
-		hBox_radio.add(remenber_password_checkbox);
-		hBox_radio.add(Box.createGlue());
-		hBox_radio.add(auto_login_checkbox);
+		GridBagConstraints gbc_user_name_label = new GridBagConstraints();
+		gbc_user_name_label.fill = GridBagConstraints.BOTH;
+		gbc_user_name_label.insets = new Insets(0, 0, 5, 5);
+		gbc_user_name_label.gridx = 1;
+		gbc_user_name_label.gridy = 0;
+		panel.add(user_name_label, gbc_user_name_label);
+		user_name_text = new JTextField(10);
+		GridBagConstraints gbc_user_name_text = new GridBagConstraints();
+		gbc_user_name_text.fill = GridBagConstraints.BOTH;
+		gbc_user_name_text.insets = new Insets(0, 0, 5, 5);
+		gbc_user_name_text.gridx = 2;
+		gbc_user_name_text.gridy = 0;
+		panel.add(user_name_text, gbc_user_name_text);
+		GridBagConstraints gbc_register_label = new GridBagConstraints();
+		gbc_register_label.fill = GridBagConstraints.BOTH;
+		gbc_register_label.insets = new Insets(0, 0, 5, 0);
+		gbc_register_label.gridx = 3;
+		gbc_register_label.gridy = 0;
+		panel.add(register_label, gbc_register_label);
+		GridBagConstraints gbc_password_label = new GridBagConstraints();
+		gbc_password_label.fill = GridBagConstraints.BOTH;
+		gbc_password_label.insets = new Insets(0, 0, 5, 5);
+		gbc_password_label.gridx = 1;
+		gbc_password_label.gridy = 1;
+		panel.add(password_label, gbc_password_label);
+		password_text = new JPasswordField(10);
+		GridBagConstraints gbc_password_text = new GridBagConstraints();
+		gbc_password_text.fill = GridBagConstraints.BOTH;
+		gbc_password_text.insets = new Insets(0, 0, 5, 5);
+		gbc_password_text.gridx = 2;
+		gbc_password_text.gridy = 1;
+		panel.add(password_text, gbc_password_text);
+		GridBagConstraints gbc_foreget_password_label = new GridBagConstraints();
+		gbc_foreget_password_label.fill = GridBagConstraints.BOTH;
+		gbc_foreget_password_label.insets = new Insets(0, 0, 5, 0);
+		gbc_foreget_password_label.gridx = 3;
+		gbc_foreget_password_label.gridy = 1;
+		panel.add(foreget_password_label, gbc_foreget_password_label);
 
-		Box hBox_bottom = Box.createHorizontalBox();
-		hBox_bottom.add(login_button);
-
-		Box vBox = Box.createVerticalBox();
-		vBox.add(hBox_user);
-		vBox.add(hBox_pass);
-		vBox.add(hBox_radio);
-		vBox.add(hBox_bottom);
-
-		this.add(vBox, BorderLayout.SOUTH);
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(null);
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_1.gridx = 2;
+		gbc_panel_1.gridy = 2;
+		panel.add(panel_1, gbc_panel_1);
+		panel_1.add(remenber_password_checkbox);
+		panel_1.add(auto_login_checkbox);
+		GridBagConstraints gbc_login_button = new GridBagConstraints();
+		gbc_login_button.fill = GridBagConstraints.VERTICAL;
+		gbc_login_button.insets = new Insets(0, 0, 5, 5);
+		gbc_login_button.gridx = 2;
+		gbc_login_button.gridy = 3;
+		panel.add(login_button, gbc_login_button);
 	}
 
 	private void setActions() {
@@ -114,7 +162,7 @@ public class Login extends JFrame implements UI_code {
 			public void actionPerformed(ActionEvent arg0) {
 				username = user_name_text.getText();
 				password = String.valueOf(password_text.getPassword());
-				showResponse();
+				showResponse(false);
 			}
 		});
 
@@ -157,7 +205,7 @@ public class Login extends JFrame implements UI_code {
 				// TODO Auto-generated method stub
 				if (e.getSource() == foreget_password_label) {
 					_this.dispose();
-					new Start_ui(-1).start();
+					new Start_ui(FORGET_PASSWORD_VIEW).start();
 				} else if (e.getSource() == register_label) {
 					_this.dispose();
 					new Start_ui(REGISTER_VIEW).start();
@@ -169,27 +217,31 @@ public class Login extends JFrame implements UI_code {
 	}
 
 	private void checkAutoLogin() {
-		try {
-			File last_user = new File("./last.in");
-			if (last_user.exists()) {
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(last_user));
-				username = bufferedReader.readLine().trim();
-				bufferedReader.close();
-				if (new File("./user_setting" + username.hashCode() + ".in").exists()) {
-					bufferedReader = new BufferedReader(
-							new FileReader(new File("./user_setting" + username.hashCode() + ".in")));
+		if (allow_auto_login) {
+			try {
+				File last_user = new File("./last.in");
+				if (last_user.exists()) {
+					BufferedReader bufferedReader = new BufferedReader(new FileReader(last_user));
 					username = bufferedReader.readLine().trim();
-					password = bufferedReader.readLine().trim();
-					showResponse();
+					bufferedReader.close();
+					if (new File("./user_setting" + username.hashCode() + ".in").exists()) {
+						bufferedReader = new BufferedReader(
+								new FileReader(new File("./user_setting" + username.hashCode() + ".in")));
+						username = bufferedReader.readLine().trim();
+						password = bufferedReader.readLine().trim();
+						bufferedReader.close();
+						showResponse(true);
+					}
+
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
-	private void showResponse() {
-		switch (verifyData()) {
+	private void showResponse(boolean isAuto) {
+		switch (verifyData(isAuto)) {
 		case Empty_password:
 			JOptionPane.showMessageDialog(_this.getContentPane(), "请输入密码！", "登陆失败", 0);
 			break;
@@ -201,6 +253,9 @@ public class Login extends JFrame implements UI_code {
 			break;
 		case Mismatch:
 			JOptionPane.showMessageDialog(_this.getContentPane(), "用户名或密码错误！", "登陆失败", 0);
+			break;
+		case Onlined:
+			JOptionPane.showMessageDialog(_this.getContentPane(), "请勿重复登录！", "登陆失败", 0);
 			break;
 		case Success:
 			try {
@@ -235,16 +290,16 @@ public class Login extends JFrame implements UI_code {
 		}
 	}
 
-	public Error_code verifyData() {
+	public Error_code verifyData(boolean isAuto) {
 		if (username.isEmpty())
 			return Error_code.Empty_userName;
 		if (password.isEmpty())
 			return Error_code.Empty_password;
 		// TODO Check online!
-		return UrlRequest.Check_login(username, password);
+		return UrlRequest.Check_login(username, password, isAuto);
 	}
 
 	public static void main(String[] args) {
-		new Login();
+		new Login(true);
 	}
 }

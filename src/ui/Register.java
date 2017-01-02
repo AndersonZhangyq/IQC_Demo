@@ -2,13 +2,18 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.UnsupportedEncodingException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.lang.management.ManagementFactory;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -27,12 +33,13 @@ import url_request.UrlRequest;
 
 public class Register extends JFrame implements UI_code {
 
-	JLabel user_name_label, nick_name_label, password_label, password_to_confirm_label;
+	JLabel user_name_label, nick_name_label, password_label, password_to_confirm_label, go_back;
 	JTextField user_name_text, nick_name_text;
 	JPasswordField password_text, password_to_confirm_text;
 	JLabel user_name_info_label, nick_name_info_label, password_info_label, password_to_confirm_info_label;
 	JButton register_button;
 	JFrame _this;
+	JPanel top_panel;
 	String user_name, password, nick_name, password_to_comfirm, encrypted_password;
 	boolean user_name_set, password_set, password_to_confirm_set, nick_name_set;
 	
@@ -42,6 +49,8 @@ public class Register extends JFrame implements UI_code {
 	public static final int DEFAULT_HEIGHT = 400;
 
 	public Register() {
+		String name = ManagementFactory.getRuntimeMXBean().getName();
+		System.out.println("Register PID: " + name);
 		Init();
 		setActions();
 		setVisible(true);
@@ -51,6 +60,7 @@ public class Register extends JFrame implements UI_code {
 
 		_this = this;
 
+		go_back = new JLabel("返回登录界面");
 		user_name_set = password_set = password_to_confirm_set = nick_name_set = false;
 		user_name_label = new JLabel("用户名：");
 		nick_name_label = new JLabel("昵称：");
@@ -60,6 +70,7 @@ public class Register extends JFrame implements UI_code {
 		nick_name_info_label = new JLabel("");
 		password_info_label = new JLabel("");
 		password_to_confirm_info_label = new JLabel("");
+		top_panel = new JPanel();
 
 		user_name_text = new JTextField(10);
 		nick_name_text = new JTextField(10);
@@ -78,6 +89,8 @@ public class Register extends JFrame implements UI_code {
 
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		setTitle("注册");
 
 	}
 
@@ -177,6 +190,38 @@ public class Register extends JFrame implements UI_code {
 
 			}
 		};
+		go_back.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				new Start_ui(LOGIN_VIEW).start();
+			}
+		});
 		user_name_text.addFocusListener(showInfo);
 		password_text.addFocusListener(showInfo);
 		password_to_confirm_text.addFocusListener(showInfo);
@@ -184,41 +229,147 @@ public class Register extends JFrame implements UI_code {
 	}
 
 	private void initialize_ui() {
-		Box hBox_user = Box.createHorizontalBox();
-		hBox_user.add(user_name_label);
-		hBox_user.add(user_name_text);
-		hBox_user.add(user_name_info_label);
+		this.add(top_panel, BorderLayout.NORTH);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[] { 100, 180, 145, 0 };
+		gbl_panel_1.rowHeights = new int[] { 35, 35, 35, 35, 0 };
+		gbl_panel_1.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel_1.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0 };
+		top_panel.setLayout(gbl_panel_1);
+		user_name_label = new JLabel("用户名：");
+		user_name_label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		GridBagConstraints gbc_user_name_label = new GridBagConstraints();
+		gbc_user_name_label.anchor = GridBagConstraints.EAST;
+		gbc_user_name_label.fill = GridBagConstraints.VERTICAL;
+		gbc_user_name_label.insets = new Insets(0, 0, 5, 5);
+		gbc_user_name_label.gridx = 0;
+		gbc_user_name_label.gridy = 0;
+		top_panel.add(user_name_label, gbc_user_name_label);
 
-		Box hBox_nickname = Box.createHorizontalBox();
-		hBox_nickname.add(nick_name_label);
-		hBox_nickname.add(nick_name_text);
-		hBox_nickname.add(nick_name_info_label);
+		user_name_text = new JTextField(10);
+		GridBagConstraints gbc_user_name_text = new GridBagConstraints();
+		gbc_user_name_text.fill = GridBagConstraints.BOTH;
+		gbc_user_name_text.insets = new Insets(0, 0, 5, 5);
+		gbc_user_name_text.gridx = 1;
+		gbc_user_name_text.gridy = 0;
+		top_panel.add(user_name_text, gbc_user_name_text);
+		user_name_info_label = new JLabel("");
+		GridBagConstraints gbc_user_name_info_label = new GridBagConstraints();
+		gbc_user_name_info_label.fill = GridBagConstraints.BOTH;
+		gbc_user_name_info_label.insets = new Insets(0, 0, 5, 0);
+		gbc_user_name_info_label.gridx = 2;
+		gbc_user_name_info_label.gridy = 0;
+		top_panel.add(user_name_info_label, gbc_user_name_info_label);
 
-		Box hbox_password = Box.createHorizontalBox();
-		hbox_password.add(password_label);
-		hbox_password.add(password_text);
-		hbox_password.add(password_info_label);
-
-		Box hBox_password_to_confirm = Box.createHorizontalBox();
-		hBox_password_to_confirm.add(password_to_confirm_label);
-		hBox_password_to_confirm.add(password_to_confirm_text);
-		hBox_password_to_confirm.add(password_to_confirm_info_label);
-
-		Box hBox_bottom = Box.createHorizontalBox();
-		hBox_bottom.add(register_button);
+		user_name_info_label.setForeground(Color.RED);
+		nick_name_label = new JLabel("昵称：");
+		GridBagConstraints gbc_nick_name_label = new GridBagConstraints();
+		gbc_nick_name_label.anchor = GridBagConstraints.EAST;
+		gbc_nick_name_label.fill = GridBagConstraints.VERTICAL;
+		gbc_nick_name_label.insets = new Insets(0, 0, 5, 5);
+		gbc_nick_name_label.gridx = 0;
+		gbc_nick_name_label.gridy = 1;
+		top_panel.add(nick_name_label, gbc_nick_name_label);
+		nick_name_text = new JTextField(10);
+		GridBagConstraints gbc_nick_name_text = new GridBagConstraints();
+		gbc_nick_name_text.fill = GridBagConstraints.BOTH;
+		gbc_nick_name_text.insets = new Insets(0, 0, 5, 5);
+		gbc_nick_name_text.gridx = 1;
+		gbc_nick_name_text.gridy = 1;
+		top_panel.add(nick_name_text, gbc_nick_name_text);
+		nick_name_info_label = new JLabel("");
+		GridBagConstraints gbc_nick_name_info_label = new GridBagConstraints();
+		gbc_nick_name_info_label.fill = GridBagConstraints.BOTH;
+		gbc_nick_name_info_label.insets = new Insets(0, 0, 5, 0);
+		gbc_nick_name_info_label.gridx = 2;
+		gbc_nick_name_info_label.gridy = 1;
+		top_panel.add(nick_name_info_label, gbc_nick_name_info_label);
+		nick_name_info_label.setForeground(Color.RED);
+		password_label = new JLabel("密码：");
+		GridBagConstraints gbc_password_label = new GridBagConstraints();
+		gbc_password_label.anchor = GridBagConstraints.EAST;
+		gbc_password_label.fill = GridBagConstraints.VERTICAL;
+		gbc_password_label.insets = new Insets(0, 0, 5, 5);
+		gbc_password_label.gridx = 0;
+		gbc_password_label.gridy = 2;
+		top_panel.add(password_label, gbc_password_label);
+		password_text = new JPasswordField(10);
+		GridBagConstraints gbc_password_text = new GridBagConstraints();
+		gbc_password_text.fill = GridBagConstraints.BOTH;
+		gbc_password_text.insets = new Insets(0, 0, 5, 5);
+		gbc_password_text.gridx = 1;
+		gbc_password_text.gridy = 2;
+		top_panel.add(password_text, gbc_password_text);
+		password_info_label = new JLabel("");
+		GridBagConstraints gbc_password_info_label = new GridBagConstraints();
+		gbc_password_info_label.fill = GridBagConstraints.BOTH;
+		gbc_password_info_label.insets = new Insets(0, 0, 5, 0);
+		gbc_password_info_label.gridx = 2;
+		gbc_password_info_label.gridy = 2;
+		top_panel.add(password_info_label, gbc_password_info_label);
+		password_info_label.setForeground(Color.red);
+		password_to_confirm_label = new JLabel("确认密码：");
+		GridBagConstraints gbc_password_to_confirm_label = new GridBagConstraints();
+		gbc_password_to_confirm_label.anchor = GridBagConstraints.EAST;
+		gbc_password_to_confirm_label.fill = GridBagConstraints.VERTICAL;
+		gbc_password_to_confirm_label.insets = new Insets(0, 0, 0, 5);
+		gbc_password_to_confirm_label.gridx = 0;
+		gbc_password_to_confirm_label.gridy = 3;
+		top_panel.add(password_to_confirm_label, gbc_password_to_confirm_label);
+		password_to_confirm_info_label = new JLabel("");
+		password_to_confirm_text = new JPasswordField(10);
+		GridBagConstraints gbc_password_to_confirm_text = new GridBagConstraints();
+		gbc_password_to_confirm_text.fill = GridBagConstraints.BOTH;
+		gbc_password_to_confirm_text.insets = new Insets(0, 0, 0, 5);
+		gbc_password_to_confirm_text.gridx = 1;
+		gbc_password_to_confirm_text.gridy = 3;
+		top_panel.add(password_to_confirm_text, gbc_password_to_confirm_text);
+		GridBagConstraints gbc_password_to_confirm_info_label = new GridBagConstraints();
+		gbc_password_to_confirm_info_label.fill = GridBagConstraints.BOTH;
+		gbc_password_to_confirm_info_label.gridx = 2;
+		gbc_password_to_confirm_info_label.gridy = 3;
+		top_panel.add(password_to_confirm_info_label, gbc_password_to_confirm_info_label);
+		password_to_confirm_info_label.setForeground(Color.RED);
 
 		Box vBox_all = Box.createVerticalBox();
-		vBox_all.add(hBox_user);
-		vBox_all.add(hBox_nickname);
-		vBox_all.add(hbox_password);
-		vBox_all.add(hBox_password_to_confirm);
-		vBox_all.add(hBox_bottom);
 
-		this.add(vBox_all, BorderLayout.NORTH);
+		getContentPane().add(vBox_all, BorderLayout.CENTER);
+
+		JPanel panel = new JPanel();
+		vBox_all.add(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+
+		JPanel buttom_jpanel = new JPanel();
+		panel.add(buttom_jpanel, BorderLayout.NORTH);
+		GridBagLayout gbl_buttom_jpanel = new GridBagLayout();
+		gbl_buttom_jpanel.rowHeights = new int[] { 27 };
+		gbl_buttom_jpanel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
+		gbl_buttom_jpanel.rowWeights = new double[] { 0.0 };
+		buttom_jpanel.setLayout(gbl_buttom_jpanel);
+		
+		GridBagConstraints gbc_go_back = new GridBagConstraints();
+		gbc_go_back.weightx = 15.0;
+		gbc_go_back.fill = GridBagConstraints.BOTH;
+		gbc_go_back.insets = new Insets(0, 0, 0, 5);
+		gbc_go_back.gridx = 0;
+		gbc_go_back.gridy = 0;
+		buttom_jpanel.add(go_back, gbc_go_back);
+
+
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.weightx = 20.0;
+		gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNewButton.fill = GridBagConstraints.BOTH;
+		gbc_btnNewButton.gridx = 1;
+		gbc_btnNewButton.gridy = 0;
+		buttom_jpanel.add(register_button, gbc_btnNewButton);
+
+		Component horizontalGlue = Box.createHorizontalGlue();
+		GridBagConstraints gbc_horizontalGlue = new GridBagConstraints();
+		gbc_horizontalGlue.weightx = 65.0;
+		gbc_horizontalGlue.gridwidth = 2;
+		gbc_horizontalGlue.gridx = 2;
+		gbc_horizontalGlue.gridy = 0;
+		buttom_jpanel.add(horizontalGlue, gbc_horizontalGlue);
 	}
-
-	public static void main(String[] args) {
-		new Register();
-	}
-
 }

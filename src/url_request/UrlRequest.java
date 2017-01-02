@@ -13,7 +13,6 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import controller.Friend_Base_Info;
@@ -40,11 +39,12 @@ class Query_Friends_Result {
 	public Map<String, Friend_Base_Info> getFriendsList() {
 		int length = data.length;
 		System.out.println(this);
+		String user_id = User_info.getInstance().getID();
 		Map<String, Friend_Base_Info> friends_list = new HashMap<String, Friend_Base_Info>();
 		for (int i = 0; i < length; i++) {
-			Map<String, String> info = UrlRequest.Query_info(data[i].user_friend);
+			Map<String, String> info = UrlRequest.Query_info(user_id,data[i].user_friend);
 			Friend_Base_Info example = new Friend_Base_Info(info.get("user_name"), info.get("status"),
-					data[i].user_friend, info.get("remark_name"));
+					data[i].user_friend, info.get("remark_name"),info.get("nick_name"));
 			friends_list.put(data[i].user_friend, example);
 		}
 		return friends_list;
@@ -78,8 +78,11 @@ public class UrlRequest {
 	private static final String State_No_user = "No User";
 	private static final String State_Unknow_Error = "Unknow_Error";
 	private static final String State_Duplicate_Error = "Duplicate Error";
+	private static final String State_Onlined = "Onlined";
 
 	private static Error_code getReturn(String in) {
+		if (in == null)
+			return Error_code.Unknow_Error;
 		switch (in) {
 		case State_Success:
 			return Error_code.Success;
@@ -93,6 +96,8 @@ public class UrlRequest {
 			return Error_code.Unknow_Error;
 		case State_Duplicate_Error:
 			return Error_code.Duplicate_Error;
+		case State_Onlined:
+			return Error_code.Onlined;
 		default:
 			return Error_code.Unknow_Error;
 		}
@@ -120,11 +125,11 @@ public class UrlRequest {
 		return line;
 	}
 
-	public static Map<String, String> Query_info(String id) {
+	public static Map<String, String> Query_info(String user_id, String user_friend_id) {
 		URL query_id = null;
 		Map<String, String> result = null;
 		try {
-			query_id = new URL(SITE_URL + UserInfo + "info/" + id);
+			query_id = new URL(SITE_URL + UserInfo + "info/" + user_id + "/" + user_friend_id);
 			Gson gson = new Gson();
 			result = gson.fromJson(process_URL(query_id), new TypeToken<HashMap<String, String>>() {
 			}.getType());
@@ -135,25 +140,29 @@ public class UrlRequest {
 		return result;
 	}
 
-	public static String Query_IP(String user_id) {
+	public static Map<String, String> Query_IP_Port(String user_id) {
 		String result = null;
+		Map<String, String> answer = null;
 		try {
-			URL query_ip = new URL(SITE_URL + UserInfo + "ip/" + user_id);
+			URL query_ip = new URL(SITE_URL + UserInfo + "ip_port/" + user_id);
 			result = process_URL(query_ip);
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
-		return result;
+		Gson gson = new Gson();
+		answer = gson.fromJson(result, HashMap.class);
+		return answer;
 	}
 
-	public static Error_code Check_login(String user_name, String password) {
+	public static Error_code Check_login(String user_name, String password, boolean encrypted) {
 
 		HashMap<String, String> result = null;
 		user_name = Base64.encode(user_name.getBytes());
 
 		try {
-			String encrypted_password = new BASE64Encoder()
-					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
+			String encrypted_password = password;
+			if (!encrypted)
+				encrypted_password = new BASE64Encoder()
+						.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
 			URL login = new URL(SITE_URL + Check_Login + user_name + '/' + encrypted_password);
 			Gson jGson = new GsonBuilder().create();
 			result = jGson.fromJson(process_URL(login), HashMap.class);
@@ -217,7 +226,35 @@ public class UrlRequest {
 		return getReturn(result.get("result"));
 	}
 
-	public static void Logout() {
+	public static Error_code Update_Port(String user_id, int port) {
+		String result = null;
+		try {
+			URL update_port = new URL(SITE_URL + UserInfo + "update_port/" + user_id + "/" + port);
+			result = process_URL(update_port);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		Gson gson = new Gson();
+		Map<String,String> answer = gson.fromJson(result, HashMap.class);
+		return getReturn(answer.get("result"));
+	}
+
+	public static Error_code Update_Remark_Name(String user_id, String friend_id, String remark_name ) {
+		String result = null;
+		try {
+			remark_name = Base64.encode(remark_name.getBytes());
+			URL update_remark_name = new URL(
+					SITE_URL + UserInfo + "update_remark_name/" + user_id + "/" + friend_id + "/" + remark_name);
+			result = process_URL(update_remark_name);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		Gson gson = new Gson();
+		Map<String,String> answer = gson.fromJson(result, HashMap.class);
+		return getReturn(answer.get("result"));
+	}
+
+	public static String Logout() {
 		try {
 			URL logout = new URL(SITE_URL + Logout + instance.getID());
 			process_URL(logout);
@@ -225,5 +262,6 @@ public class UrlRequest {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		return "DONE";
 	}
 }

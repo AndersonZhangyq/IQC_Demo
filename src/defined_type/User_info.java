@@ -14,8 +14,6 @@ public class User_info {
 	public String user_name;
 
 	public Map<String, Friend_Base_Info> friendList = null;
-	
-	User_info instance = null;
 
 	private User_info() {
 	}

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.management.ManagementFactory;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -13,27 +14,37 @@ import com.google.gson.stream.JsonReader;
 
 import defined_type.Message_info;
 import defined_type.User_info;
+import ui.Chat.For_message;
+import url_request.UrlRequest;
 
-public class Message_Driver extends Thread {
+public class Message_Driver {
 
-	private String USER_ADDRESS = "127.0.0.1";
-	// private final int Communication_Port = 8888;
+	private String USER_ADDRESS;
+	private int USER_PORT = 8888;
 	byte[] buff_receiver, buff_sender;
-	DatagramSocket datagramSocket;
 	DatagramPacket sender_Packet, receiver_Packet;
 	String to_send, received;
 	InetAddress address;
 	Receiver receiver;
+	For_message for_message;
+	DatagramSocket datagramSocket;
 
-	public Message_Driver() {
+	public Message_Driver(String to_ip, For_message in) {
+		USER_ADDRESS = to_ip;
+		for_message = in;
 		try {
+			String name = ManagementFactory.getRuntimeMXBean().getName();
+			System.out.println("Message_Driver PID: " + name);
+			System.out.println("for_message from Message_Driver: " + for_message);
+			datagramSocket = new DatagramSocket(USER_PORT);
+			datagramSocket.setReuseAddress(true);
 			address = InetAddress.getByName(USER_ADDRESS);
 			buff_receiver = new byte[10240];
 			buff_sender = new byte[10240];
-			datagramSocket = new DatagramSocket();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			UrlRequest.Update_Port(User_info.getInstance().getID(), datagramSocket.getLocalPort());
+			start_receiving();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
@@ -47,15 +58,24 @@ public class Message_Driver extends Thread {
 		}
 	}
 
-	public void sendMessage(String row_message) {
+	public void sendMessage(String row_message) throws InterruptedException {
 		to_send = row_message;
 		new Sender().start();
 	}
 
+	public void exitReceiver() {
+		receiver = null;
+	}
+
 	class Sender extends Thread {
+		public Sender() {
+			// TODO Auto-generated constructor stub
+
+		}
 
 		@Override
 		public void run() {
+			System.out.println("Sender :" + currentThread().getId() + " created");
 			try {
 				Message_info message_info = new Message_info(
 						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
@@ -68,6 +88,8 @@ public class Message_Driver extends Thread {
 				sender_Packet = new DatagramPacket(message_to_send, message_to_send.length, address,
 						datagramSocket.getLocalPort());
 				datagramSocket.send(sender_Packet);
+				for_message.appendMessage(message_info.getFullMessage());
+				System.out.println("Sender :" + currentThread().getId() + " closed");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -80,6 +102,7 @@ public class Message_Driver extends Thread {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			System.out.println("Receiver :" + currentThread().getId() + " created");
 			while (true) {
 				try {
 					receiver_Packet = new DatagramPacket(buff_receiver, buff_receiver.length);
@@ -92,11 +115,11 @@ public class Message_Driver extends Thread {
 					JsonReader jsonReader = new JsonReader(new StringReader(jsoned_message));
 					jsonReader.setLenient(true);
 					Message_info arrived_message = gson.fromJson(jsonReader, Message_info.class);
+					for_message.appendMessage(arrived_message.getFullMessage());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-
 	}
 }

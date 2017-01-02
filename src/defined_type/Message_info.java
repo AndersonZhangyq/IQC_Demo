@@ -12,6 +12,6 @@ public class Message_info {
 	}
 	
 	public String getFullMessage(){
-		return new String(date + " " + user_name + "\n" + message);
+		return new String(date + " " + user_name + "\n" + message + "\n\n");
 	}
 }
