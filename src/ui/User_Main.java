@@ -1,4 +1,4 @@
-package ui;
+﻿package ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,7 +38,7 @@ import defined_type.User_info;
 import url_request.UrlRequest;
 
 public class User_Main extends JFrame implements UI_code {
-	
+
 	private String version_serial = "1.0";
 
 	private final String SET_REMARK_NAME = "设置昵称";
@@ -48,7 +48,7 @@ public class User_Main extends JFrame implements UI_code {
 
 	JFrame _this;
 	JMenuBar head_menu;
-	JMenu search_menu, logoff_menu,about_menu;
+	JMenu search_menu, logoff_menu, about_menu;
 	JScrollPane main_scrollpane;
 	Box vBox_all;
 	int friend_number;
@@ -65,7 +65,6 @@ public class User_Main extends JFrame implements UI_code {
 
 	public User_Main() {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
-		System.out.println("User_Main PID: " + name);
 		UrlRequest.Get_User_Friends();
 		Init();
 		setActions();
@@ -191,17 +190,17 @@ public class User_Main extends JFrame implements UI_code {
 					int button_selected = JOptionPane.showConfirmDialog(_this, "是否退出程序？", "退出提示",
 							JOptionPane.YES_NO_CANCEL_OPTION);
 					if (button_selected == JOptionPane.YES_OPTION) {
-						System.exit(0);
+						if (UrlRequest.Logout() == "DONE")
+							System.exit(0);
 					} else if (button_selected == JOptionPane.NO_OPTION) {
-						User_info.getInstance().restore();
-						UrlRequest.Logout();
-						dispose();
-						new Start_ui(LOGIN_VIEW).start();
+						if (UrlRequest.Logout() == "DONE") {
+							dispose();
+							new Start_ui(LOGIN_VIEW).start();
+						}
 					}
-				}else if (e.getSource() == search_menu){
-					JOptionPane.showMessageDialog(_this, "功能实现中，敬请期待.......", "提示",
-							JOptionPane.INFORMATION_MESSAGE);
-				}else if (e.getSource() == about_menu){
+				} else if (e.getSource() == search_menu) {
+					JOptionPane.showMessageDialog(_this, "功能实现中，敬请期待.......", "提示", JOptionPane.INFORMATION_MESSAGE);
+				} else if (e.getSource() == about_menu) {
 					JOptionPane.showMessageDialog(_this, "软件名：IQC\n作者：张逸清\n版本号：" + version_serial, "提示",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -225,7 +224,7 @@ public class User_Main extends JFrame implements UI_code {
 				_this.getContentPane().removeAll();
 				main_scrollpane.setViewportView(vBox_all);
 				_this.add(main_scrollpane);
-//				setActions();
+				// setActions();
 				_this.getContentPane().revalidate();
 			}
 
@@ -278,7 +277,7 @@ public class User_Main extends JFrame implements UI_code {
 		remark_name.addActionListener(popMenu_listener);
 
 		logoff_menu.addMouseListener(menu_mouse_listener);
-		
+
 		search_menu.addMouseListener(menu_mouse_listener);
 		about_menu.addMouseListener(menu_mouse_listener);
 
@@ -428,27 +427,6 @@ public class User_Main extends JFrame implements UI_code {
 			this.add(friend_status);
 			this.addMouseListener(show_chat_frame);
 			this.addMouseMotionListener(change_background);
-		}
-	}
-
-	class GroupJButton extends JButton implements ActionListener {
-		boolean isClosed;
-
-		public GroupJButton() {
-			super();
-			isClosed = true;
-			this.setIcon(new ImageIcon("/icon/group_closed.png"));
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isClosed) {
-				isClosed = false;
-				this.setIcon(new ImageIcon("/icon/group_opened.png"));
-			} else {
-				isClosed = true;
-				this.setIcon(new ImageIcon("/icon/group_closed.png"));
-			}
 		}
 	}
 }

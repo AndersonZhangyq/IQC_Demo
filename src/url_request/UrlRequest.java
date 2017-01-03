@@ -1,4 +1,4 @@
-package url_request;
+﻿package url_request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,25 +38,15 @@ class Query_Friends_Result {
 	// 根据返回的json获得 Friend_Relation[] data 遍历数组 data ，利用 好友 id
 	public Map<String, Friend_Base_Info> getFriendsList() {
 		int length = data.length;
-		System.out.println(this);
 		String user_id = User_info.getInstance().getID();
 		Map<String, Friend_Base_Info> friends_list = new HashMap<String, Friend_Base_Info>();
 		for (int i = 0; i < length; i++) {
-			Map<String, String> info = UrlRequest.Query_info(user_id,data[i].user_friend);
+			Map<String, String> info = UrlRequest.Query_info(user_id, data[i].user_friend);
 			Friend_Base_Info example = new Friend_Base_Info(info.get("user_name"), info.get("status"),
-					data[i].user_friend, info.get("remark_name"),info.get("nick_name"));
+					data[i].user_friend, info.get("remark_name"), info.get("nick_name"));
 			friends_list.put(data[i].user_friend, example);
 		}
 		return friends_list;
-	}
-
-	@Override
-	public String toString() {
-		String result = null;
-		for (Friend_Relation aBase_Info : data) {
-			System.out.println(aBase_Info.user_origin + "  " + aBase_Info.user_friend);
-		}
-		return null;
 	}
 }
 
@@ -107,7 +97,6 @@ public class UrlRequest {
 		HttpURLConnection url_connection;
 		String line = null;
 		try {
-			System.out.println("URL: " + to_connect);
 			url_connection = (HttpURLConnection) to_connect.openConnection();
 			url_connection.setRequestProperty("User-Agent", "Java_Client");
 			url_connection.connect();
@@ -117,7 +106,6 @@ public class UrlRequest {
 				buffer.append(line);
 			}
 			line = buffer.toString();
-			System.out.println("result for URL : " + line);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -211,12 +199,13 @@ public class UrlRequest {
 		return to_return;
 	}
 
-	public static Error_code sendMessage(String message_from, String message_to, String message_text) {
+	public static Error_code sendMessage(String message_from, String message_to, String message_text,
+			String message_time) {
 		Map<String, String> result = null;
 		try {
 			message_text = Base64.encode(message_text.getBytes());
-			URL send_Message = new URL(
-					SITE_URL + Message + "record_message/" + message_from + "/" + message_to + "/" + message_text);
+			URL send_Message = new URL(SITE_URL + Message + "record_message/" + message_from + "/" + message_to + "/"
+					+ message_text + "/" + message_time);
 			String get = process_URL(send_Message);
 			Gson gson = new Gson();
 			result = gson.fromJson(get, HashMap.class);
@@ -235,11 +224,11 @@ public class UrlRequest {
 			// TODO: handle exception
 		}
 		Gson gson = new Gson();
-		Map<String,String> answer = gson.fromJson(result, HashMap.class);
+		Map<String, String> answer = gson.fromJson(result, HashMap.class);
 		return getReturn(answer.get("result"));
 	}
 
-	public static Error_code Update_Remark_Name(String user_id, String friend_id, String remark_name ) {
+	public static Error_code Update_Remark_Name(String user_id, String friend_id, String remark_name) {
 		String result = null;
 		try {
 			remark_name = Base64.encode(remark_name.getBytes());
@@ -250,7 +239,24 @@ public class UrlRequest {
 			// TODO: handle exception
 		}
 		Gson gson = new Gson();
-		Map<String,String> answer = gson.fromJson(result, HashMap.class);
+		Map<String, String> answer = gson.fromJson(result, HashMap.class);
+		return getReturn(answer.get("result"));
+	}
+
+	public static Error_code Change_Password(String user_name, String password) {
+		String encrypted_password = null, result = null;
+		try {
+			user_name = Base64.encode(user_name.getBytes());
+			encrypted_password = new BASE64Encoder()
+					.encode(MessageDigest.getInstance("MD5").digest(password.getBytes("utf-8")));
+			URL change_password = new URL(
+					SITE_URL + UserInfo + "change_password/" + user_name + "/" + encrypted_password);
+			result = process_URL(change_password);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		Gson gson = new Gson();
+		Map<String, String> answer = gson.fromJson(result, HashMap.class);
 		return getReturn(answer.get("result"));
 	}
 

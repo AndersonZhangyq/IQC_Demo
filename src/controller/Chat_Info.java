@@ -1,4 +1,4 @@
-package controller;
+﻿package controller;
 
 public class Chat_Info {
 	String user_from;

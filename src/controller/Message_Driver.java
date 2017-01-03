@@ -1,4 +1,4 @@
-package controller;
+﻿package controller;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,6 +14,7 @@ import com.google.gson.stream.JsonReader;
 
 import defined_type.Message_info;
 import defined_type.User_info;
+import ui.Chat;
 import ui.Chat.For_message;
 import url_request.UrlRequest;
 
@@ -22,6 +23,7 @@ public class Message_Driver {
 	private String USER_ADDRESS;
 	private int USER_PORT = 8888;
 	byte[] buff_receiver, buff_sender;
+	Chat_Info from_Chat;
 	DatagramPacket sender_Packet, receiver_Packet;
 	String to_send, received;
 	InetAddress address;
@@ -29,13 +31,12 @@ public class Message_Driver {
 	For_message for_message;
 	DatagramSocket datagramSocket;
 
-	public Message_Driver(String to_ip, For_message in) {
+	public Message_Driver(String to_ip, For_message in, Chat_Info from_chat) {
 		USER_ADDRESS = to_ip;
 		for_message = in;
+		this.from_Chat = from_chat;
 		try {
 			String name = ManagementFactory.getRuntimeMXBean().getName();
-			System.out.println("Message_Driver PID: " + name);
-			System.out.println("for_message from Message_Driver: " + for_message);
 			datagramSocket = new DatagramSocket(USER_PORT);
 			datagramSocket.setReuseAddress(true);
 			address = InetAddress.getByName(USER_ADDRESS);
@@ -75,21 +76,19 @@ public class Message_Driver {
 
 		@Override
 		public void run() {
-			System.out.println("Sender :" + currentThread().getId() + " created");
 			try {
-				Message_info message_info = new Message_info(
-						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+				String send_time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+				Message_info message_info = new Message_info(send_time,
 						User_info.getInstance().getUser_name(), to_send);
+				UrlRequest.sendMessage(from_Chat.getUser_from_id(), from_Chat.getUser_to_id(), to_send, send_time);
 				Gson gson = new Gson();
 				String message_jsoned = gson.toJson(message_info, Message_info.class);
-				System.out.println("Message sent: " + message_jsoned);
 				byte[] message_to_send = message_jsoned.getBytes();
 
 				sender_Packet = new DatagramPacket(message_to_send, message_to_send.length, address,
 						datagramSocket.getLocalPort());
 				datagramSocket.send(sender_Packet);
 				for_message.appendMessage(message_info.getFullMessage());
-				System.out.println("Sender :" + currentThread().getId() + " closed");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -102,14 +101,12 @@ public class Message_Driver {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			System.out.println("Receiver :" + currentThread().getId() + " created");
 			while (true) {
 				try {
 					receiver_Packet = new DatagramPacket(buff_receiver, buff_receiver.length);
 					datagramSocket.receive(receiver_Packet);
 					buff_receiver = receiver_Packet.getData();
 					String jsoned_message = new String(buff_receiver);
-					System.out.println("Message received: " + jsoned_message);
 
 					Gson gson = new Gson();
 					JsonReader jsonReader = new JsonReader(new StringReader(jsoned_message));

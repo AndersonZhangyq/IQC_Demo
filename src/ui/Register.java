@@ -1,4 +1,4 @@
-package ui;
+﻿package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,7 +50,6 @@ public class Register extends JFrame implements UI_code {
 
 	public Register() {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
-		System.out.println("Register PID: " + name);
 		Init();
 		setActions();
 		setVisible(true);
@@ -126,6 +125,10 @@ public class Register extends JFrame implements UI_code {
 			}
 		});
 		FocusListener showInfo = new FocusListener() {
+			
+			public void setDisable(){
+				register_button.setEnabled(false);
+			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
@@ -135,12 +138,17 @@ public class Register extends JFrame implements UI_code {
 					user_name_info_label.setText("");
 					if (user_name.isEmpty()) {
 						user_name_info_label.setText("请输入用户名！");
+						user_name_set = false;
+						setDisable();
 						return;
 					}
 					String emailReg = "(([a-zA-Z]?[0-9]+)|([a-zA-Z]+[0-9]?))@([a-zA-z0-9]{1,}.){1,3}[a-zA-z]{1,}";
 					Matcher email_match = Pattern.compile(emailReg).matcher(user_name);
 					if (!email_match.find()) {
 						user_name_info_label.setText("用户名格式错误！");
+						user_name_set = false;
+						setDisable();
+						return;
 					}
 					user_name_set = true;
 				} else if (source == password_text) {
@@ -148,10 +156,14 @@ public class Register extends JFrame implements UI_code {
 					password_info_label.setText("");
 					if (password.isEmpty()) {
 						password_info_label.setText("请输入密码");
+						password_set = false;
+						setDisable();
 						return;
 					}
 					if (password.length() < 6) {
 						password_info_label.setText("密码长度至少为6位！");
+						password_set = false;
+						setDisable();
 						return;
 					}
 					password_set = true;
@@ -160,10 +172,14 @@ public class Register extends JFrame implements UI_code {
 					password_to_confirm_info_label.setText("");
 					if (password_to_comfirm.isEmpty()) {
 						password_to_confirm_info_label.setText("请再次输入密码！");
+						password_to_confirm_set = false;
+						setDisable();
 						return;
 					}
 					if (!password_to_comfirm.equals(password)) {
 						password_to_confirm_info_label.setText("两次密码不一致！");
+						password_to_confirm_set = false;
+						setDisable();
 						return;
 					}
 					password_to_confirm_set = true;
@@ -172,10 +188,14 @@ public class Register extends JFrame implements UI_code {
 					nick_name_info_label.setText("");
 					if (nick_name.isEmpty()) {
 						nick_name_info_label.setText("请输入昵称！");
+						nick_name_set = false;
+						setDisable();
 						return;
 					}
 					if (nick_name.trim().length() == 0) {
 						nick_name_info_label.setText("昵称不能全为空格！");
+						nick_name_set = false;
+						setDisable();
 						return;
 					}
 					nick_name_set = true;
@@ -219,6 +239,7 @@ public class Register extends JFrame implements UI_code {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
+				dispose();
 				new Start_ui(LOGIN_VIEW).start();
 			}
 		});

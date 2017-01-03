@@ -1,4 +1,4 @@
-package ui;
+﻿package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -58,13 +58,12 @@ public class Chat extends JFrame {
 	public Chat(Chat_Info chat_Info, Friend_info_panel origin) {
 
 		String name = ManagementFactory.getRuntimeMXBean().getName();
-		System.out.println("Chat PID: " + name);
 
 		this.chat_Info = chat_Info;
 		this.origin = origin;
 		Init();
 		setActions();
-		message_Driver = new Message_Driver(chat_Info.getTo_ip(), for_message);
+		message_Driver = new Message_Driver(chat_Info.getTo_ip(), for_message,chat_Info);
 		setVisible(true);
 	}
 
@@ -78,7 +77,6 @@ public class Chat extends JFrame {
 			JOptionPane.showMessageDialog(_this, "至少含有一个非空格字符！", "消息发送错误", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		UrlRequest.sendMessage(chat_Info.getUser_from_id(), chat_Info.getUser_to_id(), message_text);
 		try {
 			message_Driver.sendMessage(message_text);
 		} catch (InterruptedException e) {
@@ -263,8 +261,6 @@ public class Chat extends JFrame {
 
 		show_message_textarea = for_message.show_message_textarea;
 		show_message_textarea.setEditable(false);
-
-		System.out.println("for_message from Chat: " + for_message);
 
 		send_message_textarea = new JTextArea();
 		send_button = new JButton("发送");

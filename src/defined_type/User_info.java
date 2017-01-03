@@ -1,4 +1,4 @@
-package defined_type;
+﻿package defined_type;
 
 import java.util.Map;
 

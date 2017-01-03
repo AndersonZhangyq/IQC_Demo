@@ -1,4 +1,4 @@
-package ui;
+﻿package ui;
 
 import java.lang.management.ManagementFactory;
 
@@ -24,7 +24,6 @@ public class Start_ui extends Thread implements UI_code {
 
 	public Start_ui(int id) {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
-		System.out.println("Start_ui PID: " + name);
 		requested_id = id;
 	}
 

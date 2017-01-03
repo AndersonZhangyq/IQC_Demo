@@ -1,4 +1,4 @@
-package controller;
+﻿package controller;
 
 public class Friend_Base_Info {
 	private String user_name;

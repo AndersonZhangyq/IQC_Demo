@@ -1,10 +1,12 @@
-package ui;
+﻿package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -15,23 +17,25 @@ import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import defined_type.UI_code;
+import url_request.UrlRequest;
 
 public class Forget_Password extends JFrame implements UI_code {
 
-	JLabel user_name_label, new_password_label,password_to_confirm_label;
-	JLabel user_name_info_label,new_password_info_label,password_to_confirm_info_label;
+	JLabel user_name_label, new_password_label, password_to_confirm_label;
+	JLabel user_name_info_label, new_password_info_label, password_to_confirm_info_label;
 	JLabel go_back;
 	JTextField user_name_text;
 	JPasswordField new_password_text, password_to_confirm_text;
 	JButton submit_button;
 	JFrame _this;
-	String user_name, password, nick_name, password_to_comfirm, encrypted_password;
-	boolean user_name_set, password_set, password_to_confirm_set, nick_name_set;
+	String user_name, password, nick_name, password_to_comfirm;
+	boolean user_name_set, password_set, password_to_confirm_set;
 
 	public static final int DEFAULT_WIDTH = 400;
 	public static final int DEFAULT_HEIGHT = 400;
@@ -43,6 +47,26 @@ public class Forget_Password extends JFrame implements UI_code {
 
 	private void setActions() {
 		// TODO Auto-generated method stub
+		submit_button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				switch (UrlRequest.Change_Password(user_name, password)) {
+				case Success:
+					JOptionPane.showMessageDialog(_this, "设置成功！", "提示信息", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+					new Start_ui(LOGIN_VIEW).start();
+					break;
+				case No_user:
+					JOptionPane.showMessageDialog(_this, "用户不存在！", "提示信息", JOptionPane.WARNING_MESSAGE);
+					break;
+				default:
+					JOptionPane.showMessageDialog(_this, "修改密码失败！", "提示信息", JOptionPane.WARNING_MESSAGE);
+					break;
+				}
+			}
+		});
 		go_back.addMouseListener(new MouseListener() {
 
 			@Override
@@ -77,6 +101,10 @@ public class Forget_Password extends JFrame implements UI_code {
 			}
 		});
 		FocusListener showInfo = new FocusListener() {
+			
+			public void setDisabel(){
+				submit_button.setEnabled(false);
+			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
@@ -86,12 +114,16 @@ public class Forget_Password extends JFrame implements UI_code {
 					user_name_info_label.setText("");
 					if (user_name.isEmpty()) {
 						user_name_info_label.setText("请输入用户名！");
+						user_name_set = false;
+						setDisabel();
 						return;
 					}
 					String emailReg = "(([a-zA-Z]?[0-9]+)|([a-zA-Z]+[0-9]?))@([a-zA-z0-9]{1,}.){1,3}[a-zA-z]{1,}";
 					Matcher email_match = Pattern.compile(emailReg).matcher(user_name);
 					if (!email_match.find()) {
 						user_name_info_label.setText("用户名格式错误！");
+						setDisabel();
+						return;
 					}
 					user_name_set = true;
 				} else if (source == new_password_text) {
@@ -99,10 +131,14 @@ public class Forget_Password extends JFrame implements UI_code {
 					new_password_info_label.setText("");
 					if (password.isEmpty()) {
 						new_password_info_label.setText("请输入密码");
+						password_set = false;
+						setDisabel();
 						return;
 					}
 					if (password.length() < 6) {
 						new_password_info_label.setText("密码长度至少为6位！");
+						password_set = false;
+						setDisabel();
 						return;
 					}
 					password_set = true;
@@ -111,15 +147,19 @@ public class Forget_Password extends JFrame implements UI_code {
 					password_to_confirm_info_label.setText("");
 					if (password_to_comfirm.isEmpty()) {
 						password_to_confirm_info_label.setText("请再次输入密码！");
+						password_to_confirm_set =false;
+						setDisabel();
 						return;
 					}
 					if (!password_to_comfirm.equals(password)) {
 						password_to_confirm_info_label.setText("两次密码不一致！");
+						password_to_confirm_set =false;
+						setDisabel();
 						return;
 					}
 					password_to_confirm_set = true;
-				} 
-				if (user_name_set && password_set && password_to_confirm_set && nick_name_set)
+				}
+				if (user_name_set && password_set && password_to_confirm_set)
 					submit_button.setEnabled(true);
 				return;
 			}
@@ -140,21 +180,23 @@ public class Forget_Password extends JFrame implements UI_code {
 		user_name_label = new JLabel("用户名：");
 		new_password_label = new JLabel("新密码：");
 		password_to_confirm_label = new JLabel("确认新密码：");
-		
+
 		user_name_info_label = new JLabel("");
 		password_to_confirm_info_label = new JLabel("");
 		new_password_info_label = new JLabel("");
 		submit_button = new JButton("提交");
-		
+
 		user_name_text = new JTextField(10);
 		new_password_text = new JPasswordField(10);
 		password_to_confirm_text = new JPasswordField(10);
-		
+
 		go_back = new JLabel("返回登录界面");
-		
+
 		user_name_info_label.setForeground(Color.RED);
 		new_password_info_label.setForeground(Color.red);
 		password_to_confirm_info_label.setForeground(Color.RED);
+
+		submit_button.setEnabled(false);
 
 		_this = this;
 
@@ -175,7 +217,7 @@ public class Forget_Password extends JFrame implements UI_code {
 		JPanel panel = new JPanel();
 		getContentPane().add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {30, 100, 180, 120, 30};
+		gbl_panel.columnWidths = new int[] { 30, 100, 180, 120, 30 };
 		gbl_panel.rowHeights = new int[] { 30, 30, 30, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0 };
@@ -200,7 +242,7 @@ public class Forget_Password extends JFrame implements UI_code {
 		gbc_user_name_info_label.gridx = 3;
 		gbc_user_name_info_label.gridy = 0;
 		panel.add(user_name_info_label, gbc_user_name_info_label);
-		
+
 		GridBagConstraints gbc_new_password_label = new GridBagConstraints();
 		gbc_new_password_label.anchor = GridBagConstraints.EAST;
 		gbc_new_password_label.insets = new Insets(0, 15, 5, 5);
@@ -241,7 +283,6 @@ public class Forget_Password extends JFrame implements UI_code {
 		gbc_password_to_confirm_info_label.gridx = 3;
 		gbc_password_to_confirm_info_label.gridy = 2;
 		panel.add(password_to_confirm_info_label, gbc_password_to_confirm_info_label);
-		
 
 		GridBagConstraints gbc_go_back = new GridBagConstraints();
 		gbc_go_back.insets = new Insets(0, 15, 0, 5);

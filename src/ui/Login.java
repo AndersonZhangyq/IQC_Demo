@@ -1,4 +1,4 @@
-package ui;
+﻿package ui;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -52,7 +52,6 @@ public class Login extends JFrame implements UI_code {
 	public Login(boolean allow_auto_login) {
 		this.allow_auto_login = allow_auto_login;
 		String name = ManagementFactory.getRuntimeMXBean().getName();
-		System.out.println("Login PID: " + name);
 		Init();
 		setActions();
 
