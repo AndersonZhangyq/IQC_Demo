@@ -38,6 +38,8 @@ import defined_type.User_info;
 import url_request.UrlRequest;
 
 public class User_Main extends JFrame implements UI_code {
+	
+	private String version_serial = "1.0";
 
 	private final String SET_REMARK_NAME = "设置昵称";
 	private final String REFRESH_FRIEND_LIST = "刷新好友列表";
@@ -46,7 +48,7 @@ public class User_Main extends JFrame implements UI_code {
 
 	JFrame _this;
 	JMenuBar head_menu;
-	JMenu search_menu, logoff_menu;
+	JMenu search_menu, logoff_menu,about_menu;
 	JScrollPane main_scrollpane;
 	Box vBox_all;
 	int friend_number;
@@ -78,9 +80,11 @@ public class User_Main extends JFrame implements UI_code {
 
 		search_menu = new JMenu("查找");
 		logoff_menu = new JMenu("注销");
+		about_menu = new JMenu("关于");
 
 		head_menu.add(search_menu);
 		head_menu.add(logoff_menu);
+		head_menu.add(about_menu);
 		vBox_all = Box.createVerticalBox();
 
 		right_clicked_friend_panel = new JPopupMenu();
@@ -194,6 +198,12 @@ public class User_Main extends JFrame implements UI_code {
 						dispose();
 						new Start_ui(LOGIN_VIEW).start();
 					}
+				}else if (e.getSource() == search_menu){
+					JOptionPane.showMessageDialog(_this, "功能实现中，敬请期待.......", "提示",
+							JOptionPane.INFORMATION_MESSAGE);
+				}else if (e.getSource() == about_menu){
+					JOptionPane.showMessageDialog(_this, "软件名：IQC\n作者：张逸清\n版本号：" + version_serial, "提示",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		};
@@ -213,9 +223,9 @@ public class User_Main extends JFrame implements UI_code {
 					vBox_all.add(user_info_panel);
 				}
 				_this.getContentPane().removeAll();
-				main_scrollpane = new JScrollPane(vBox_all);
+				main_scrollpane.setViewportView(vBox_all);
 				_this.add(main_scrollpane);
-				setActions();
+//				setActions();
 				_this.getContentPane().revalidate();
 			}
 
@@ -268,6 +278,9 @@ public class User_Main extends JFrame implements UI_code {
 		remark_name.addActionListener(popMenu_listener);
 
 		logoff_menu.addMouseListener(menu_mouse_listener);
+		
+		search_menu.addMouseListener(menu_mouse_listener);
+		about_menu.addMouseListener(menu_mouse_listener);
 
 		this.addWindowListener(new WindowListener() {
 
@@ -300,7 +313,6 @@ public class User_Main extends JFrame implements UI_code {
 				// TODO Auto-generated method stub
 				int answer = JOptionPane.showConfirmDialog(_this, "确认退出程序？", "退出确认", JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
-					User_info.getInstance().restore();
 					if (UrlRequest.Logout() == "DONE") {
 						dispose();
 						System.exit(0);

@@ -79,13 +79,20 @@ public class Chat extends JFrame {
 			return;
 		}
 		UrlRequest.sendMessage(chat_Info.getUser_from_id(), chat_Info.getUser_to_id(), message_text);
-		send_message_textarea.setText("");
 		try {
 			message_Driver.sendMessage(message_text);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				send_message_textarea.setText("");				
+			}
+		}).start();
 	}
 
 	private void setActions() {
@@ -166,7 +173,7 @@ public class Chat extends JFrame {
 				// TODO Auto-generated method stub
 				if (use_Ctrl && (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER)) {
 					sendMessage();
-				} else if ((!use_Ctrl) && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				} else if ((!use_Ctrl) && (!e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER)) {
 					sendMessage();
 				}
 			}
