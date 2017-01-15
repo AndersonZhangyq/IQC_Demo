@@ -83,7 +83,7 @@ public class Message_Driver {
 				UrlRequest.sendMessage(from_Chat.getUser_from_id(), from_Chat.getUser_to_id(), to_send, send_time);
 				Gson gson = new Gson();
 				String message_jsoned = gson.toJson(message_info, Message_info.class);
-				byte[] message_to_send = message_jsoned.getBytes();
+				byte[] message_to_send = message_jsoned.getBytes("GBK");
 
 				sender_Packet = new DatagramPacket(message_to_send, message_to_send.length, address,
 						datagramSocket.getLocalPort());
